@@ -15,7 +15,7 @@ export default function Game() {
   return (
     <div className="w-screen h-screen">
       <img src="./nature-background.jpg" className="w-full h-full absolute object-cover z-[-1] opacity-20"/>
-      <Header />
+      <Header setMenuState = {setMenuState}/>
       {menuState === "0" && (<MainMenu setMenuState = {setMenuState}/>)}
       {menuState === "1" && (<Multiplayer setMenuState = {setMenuState}/>)}
       {menuState === "2" && (<Solo setMenuState = {setMenuState}/>)}

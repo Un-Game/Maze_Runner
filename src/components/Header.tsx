@@ -1,7 +1,12 @@
 import { Shield } from "lucide-react"
 import { useRef } from "react";
 
-export default function Header() {
+type props = {
+    setMenuState: React.Dispatch<React.SetStateAction<string>>
+}
+
+export default function Header(props: props) {
+    const { setMenuState } = props;
       const audioRef = useRef<HTMLAudioElement>(null);
     
       const playAudio = () => {
@@ -16,9 +21,9 @@ export default function Header() {
         <div className="w-screen h-[100px] bg-black/50 flex justify-center">
             <div className="h-full w-[calc(100vw-400px)]">
                 <div className="flex justify-between h-full items-center px-[50px]">
-                    <div className="w-[100px] h-[50px]">
+                    <button className="w-[100px] h-[50px]" onClick={() => {setMenuState("0")}}>
                         <img src="./game-logo.png" className="w-full h-full"/>
-                    </div>
+                    </button>
                     <button onClick={playAudio}>Play Music</button>
                     <audio ref={audioRef} src="/music/music1.mp3" loop />
                 </div>

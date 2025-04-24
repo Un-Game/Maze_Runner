@@ -1,4 +1,5 @@
 import BackButton from "../_components/back_button"
+import MapMaker from "../map_maker/mapMaker";
 
 type props = {
     setMenuState: React.Dispatch<React.SetStateAction<string>>;
@@ -7,8 +8,9 @@ type props = {
 export default function Settings(props: props) {
     const { setMenuState } = props;
     return (
-        <div className="w-full h-[calc(100vh-100px)]">
+        <div className="w-full h-[calc(100vh-100px)] overflow-hidden">
             <BackButton setMenuState={setMenuState}/>
+            <MapMaker />
         </div>
     )
 }

@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Matter from "matter-js";
+import BackButton from "../_components/back_button";
 
-
+type props = {
+  setMenuState: React.Dispatch<React.SetStateAction<string>>;
+};
 
 const { Engine, Runner, Bodies, Body, Composite, Events } = Matter;
 
@@ -121,16 +124,15 @@ const currMap = {
 }
 
 const maze = currMap.maze
-let isSkill1Active = false;
 
-export default function GameAreaPracticeMatter() {
+export default function GameAreaPracticeMatter(props:props) {
+  const {setMenuState} = props
 
   const [renderPosition, setRenderPosition] = useState({
     x: config.containerWidth / 2,
     y: config.containerHeight / 2,
   });
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
-  // const [isSkill1Active, setIsSkill1Active] = useState(false);
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
@@ -357,13 +359,15 @@ export default function GameAreaPracticeMatter() {
 
 
   return (
+   <div> 
+    <BackButton setMenuState={setMenuState} />
     <div
       ref={sceneRef}
       style={{
         width: `${config.containerWidth}px`,
         height: `${config.containerHeight}px`,
       }}
-      className="border border-green-300 relative overflow-hidden bg-gray-800"
+      className="ml-[200px] border border-green-300 relative overflow-hidden bg-gray-800"
     >
 
       <div
@@ -416,5 +420,6 @@ export default function GameAreaPracticeMatter() {
         Skill 3: {playerSetting.skills.skill3.isInCooldown ? "On Cooldown" : "Ready"}
       </div>
     </div>
+   </div>
   );
 }

@@ -6,6 +6,9 @@ import Multiplayer from "@/components/menu_multiplayer/Multiplayer";
 import Solo from "@/components/menu_solo/Solo";
 import Settings from "@/components/menu_settings/Settings";
 import { useState } from "react";
+import MapMaker from "@/components/map_maker/mapMaker";
+import GameAreaTest from "@/components/game_container/game_area_test";
+import GameAreaPracticeMatter from "@/components/game_container/game_area_practice";
 
 export default function Game() {
 
@@ -20,6 +23,9 @@ export default function Game() {
       {menuState === "1" && (<Multiplayer setMenuState = {setMenuState}/>)}
       {menuState === "2" && (<Solo setMenuState = {setMenuState}/>)}
       {menuState === "3" && (<Settings setMenuState = {setMenuState}/>)}
+      {menuState === "4" && (<MapMaker setMenuState = {setMenuState}/>)}
+      {menuState === "5" && (<GameAreaPracticeMatter setMenuState= {setMenuState}/>)}
+      {menuState === "6" && (<GameAreaTest setMenuState= {setMenuState}/>)}
     </div>
   )
 }

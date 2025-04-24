@@ -26,9 +26,17 @@ export default function GameAreaTest(props: props) {
   const [maze, setMaze] = useState<number[][]>([]);
   const [timer, setTimer] = useState(10);
   const [gameOver, setGameOver] = useState(false);
+  const [inputLocked, setInputLocked] = useState(false);
 
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const animationFrameId = useRef<number | null>(null);
+
+  useEffect(() => {
+    setDifficulty(1);
+    setTimer(10);
+    setGameOver(false);
+    setVelocity({ x: 0, y: 0 });
+  }, []);
 
   const accelerationBase = 0.5;
   const friction = 0.9;
@@ -39,11 +47,13 @@ export default function GameAreaTest(props: props) {
 
     const timerDeduction = setInterval(() => {
       setTimer((prev) => {
-        if (prev === 1) {
+        const newTimer = prev - 1;
+        if (newTimer <= 0) {
           clearInterval(timerDeduction);
           setGameOver(true);
+          return 0; // Ensure it doesn't go below 0
         }
-        return prev - 1;
+        return Math.round(newTimer); // Round to nearest integer
       });
     }, 1000);
 
@@ -51,6 +61,9 @@ export default function GameAreaTest(props: props) {
       clearInterval(timerDeduction);
     };
   }, [gameOver]);
+
+  const isInBounds = (x: number, y: number, cols: number, rows: number) =>
+    x >= 0 && y >= 0 && x < cols && y < rows;
 
   const generateMaze = (
     cols: number,
@@ -80,7 +93,7 @@ export default function GameAreaTest(props: props) {
         const nx = x + dx;
         const ny = y + dy;
 
-        if (ny > 0 && ny < rows && nx > 0 && nx < cols && maze[ny][nx] === 1) {
+        if (isInBounds(nx, ny, cols, rows) && maze[ny][nx] === 1) {
           maze[ny - dy / 2][nx - dx / 2] = 0;
           maze[ny][nx] = 0;
           carve(nx, ny);
@@ -127,10 +140,33 @@ export default function GameAreaTest(props: props) {
       }
     }
 
+    const hasOpenSpaceAround = (x: number, y: number): boolean => {
+      const directions = [
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1],
+      ];
+      return directions.some(
+        ([dx, dy]) =>
+          isInBounds(x + dx, y + dy, cols, rows) && maze[y + dy][x + dx] === 0
+      );
+    };
+
+    const findValidSpawn = (): { x: number; y: number } => {
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * cols);
+        y = Math.floor(Math.random() * rows);
+      } while (maze[y][x] !== 0 || !hasOpenSpaceAround(x, y));
+      return { x, y };
+    };
+
+    const spawn = findValidSpawn();
     return {
       maze,
       exit: { x: farthest.x, y: farthest.y },
-      spawn: { x: startX, y: startY },
+      spawn,
     };
   };
 
@@ -165,7 +201,10 @@ export default function GameAreaTest(props: props) {
   };
 
   const moveBall = () => {
-    if (gameOver) return;
+    if (gameOver || inputLocked) {
+      animationFrameId.current = requestAnimationFrame(moveBall);
+      return;
+    }
 
     const acceleration = accelerationBase + difficulty * 0.1;
     const maxSpeed = maxSpeedBase + difficulty * 0.3;
@@ -211,6 +250,15 @@ export default function GameAreaTest(props: props) {
       updatedY = newY;
     }
 
+    updatedX = Math.max(
+      0,
+      Math.min(updatedX, (mazeSize.cols - 1) * mazeSize.cellSize)
+    );
+    updatedY = Math.max(
+      0,
+      Math.min(updatedY, (mazeSize.rows - 1) * mazeSize.cellSize)
+    );
+
     setPosition({ x: updatedX, y: updatedY });
     setVelocity(newVelocity);
 
@@ -234,16 +282,12 @@ export default function GameAreaTest(props: props) {
       hitbox.y < exitBox.y + exitBox.height &&
       hitbox.y + hitbox.height > exitBox.y
     ) {
-      console.log("🎉 Reached the exit!");
-      setDifficulty((prev) => prev + 0.3);
+      setInputLocked(true);
+      setTimeout(() => {
+        setDifficulty((prev) => Math.min(prev + 0.3, 4)); // Clamp difficulty to 4
+        setInputLocked(false);
+      }, 500);
     }
-
-    const spawnBox = {
-      x: spawn.x * mazeSize.cellSize,
-      y: spawn.y * mazeSize.cellSize,
-      width: mazeSize.cellSize,
-      height: mazeSize.cellSize,
-    };
 
     animationFrameId.current = requestAnimationFrame(moveBall);
   };
@@ -288,15 +332,24 @@ export default function GameAreaTest(props: props) {
     setStart({ x: startX, y: startY });
     setExit(newExit);
     setSpawn(newSpawn);
-    setPosition({ x: newSpawn.x * cellSize, y: newSpawn.y * cellSize });
+
+    const forcedSpawn = {
+      x: newSpawn.x * cellSize,
+      y: newSpawn.y * cellSize,
+    };
+
+    setPosition(forcedSpawn);
     setVelocity({ x: 0, y: 0 });
     setTimer(adjustedTime);
+
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+    }
   }, [difficulty]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-
     animationFrameId.current = requestAnimationFrame(moveBall);
 
     return () => {
@@ -314,6 +367,20 @@ export default function GameAreaTest(props: props) {
       <div className="flex flex-col items-center">
         <h2 className="mb-2 font-bold">Difficulty: {difficulty.toFixed(1)}</h2>
         <h2 className="font-bold">Timer: {timer}</h2>
+        {gameOver && (
+          <div>
+            <button
+              className="w-[55px] h-[25px] text-red-400"
+              onClick={() => {
+                setGameOver(false);
+                setDifficulty(1);
+                setTimer(10);
+              }}
+            >
+              Retry?
+            </button>
+          </div>
+        )}
         <div
           className="relative border border-green-300"
           style={{
@@ -339,7 +406,6 @@ export default function GameAreaTest(props: props) {
             )
           )}
 
-          {/* Exit block */}
           <div
             className="absolute bg-green-500"
             style={{
@@ -350,7 +416,19 @@ export default function GameAreaTest(props: props) {
             }}
           />
 
-          {/* Player */}
+          <div
+            className="absolute"
+            style={{
+              width: mazeSize.cellSize,
+              height: mazeSize.cellSize,
+              top: spawn.y * mazeSize.cellSize,
+              left: spawn.x * mazeSize.cellSize,
+              backgroundImage: "url('/spawn_point.png')",
+              backgroundSize: "cover",
+              pointerEvents: "none",
+            }}
+          />
+
           <div
             className="absolute bg-red-500 rounded-full"
             style={{
@@ -361,21 +439,6 @@ export default function GameAreaTest(props: props) {
             }}
           />
         </div>
-        {gameOver && (
-          <div className="flex flex-col items-center mt-2">
-            <h3 className="font-bold text-red-500 mb-1">Game Over</h3>
-            <button
-              onClick={() => {
-                setGameOver(false);
-                setDifficulty(1);
-                setTimer(10);
-              }}
-              className="p-2 bg-blue-500 text-white rounded"
-            >
-              Retry
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

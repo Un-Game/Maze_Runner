@@ -3,10 +3,11 @@ import BackButton from "../_components/back_button";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
+  menuState: string;
 };
 
 export default function MapMaker(props: props) {
-  const { setMenuState } = props;
+  const { setMenuState,menuState } = props;
 
   const [mouseActive, setMouseActive] = useState(false);
   const size = {
@@ -52,7 +53,7 @@ export default function MapMaker(props: props) {
 
   return (
     <div>
-      <BackButton setMenuState={setMenuState} />
+      <BackButton setMenuState={setMenuState} menuState={menuState}/>
       <div
         className="w-screen h-screen flex items-center justify-center"
         onMouseDown={() => setMouseActive(true)}

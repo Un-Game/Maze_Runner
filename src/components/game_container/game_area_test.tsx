@@ -3,10 +3,11 @@ import BackButton from "../_components/back_button";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
+  menuState: string;
 };
 
 export default function GameAreaTest(props: props) {
-  const { setMenuState } = props;
+  const { setMenuState,menuState } = props;
   const baseWidth = 900;
   const baseHeight = 600;
   const maxWidth = 1300;
@@ -363,7 +364,7 @@ export default function GameAreaTest(props: props) {
 
   return (
     <div>
-      <BackButton setMenuState={setMenuState} />
+      <BackButton setMenuState={setMenuState} menuState={menuState}/>
       <div className="flex flex-col items-center">
         <h2 className="mb-2 font-bold">Difficulty: {difficulty.toFixed(1)}</h2>
         <h2 className="font-bold">Timer: {timer}</h2>

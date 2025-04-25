@@ -4,6 +4,7 @@ import BackButton from "../_components/back_button";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
+  menuState: string;
 };
 
 const { Engine, Runner, Bodies, Body, Composite, Events } = Matter;
@@ -126,11 +127,15 @@ const currMap = {
 const maze = currMap.maze
 
 export default function GameAreaPracticeMatter(props:props) {
-  const {setMenuState} = props
+  const {setMenuState, menuState} = props
 
   const [renderPosition, setRenderPosition] = useState({
     x: config.containerWidth / 2,
     y: config.containerHeight / 2,
+  });
+  const [renderEnemy, setRenderEnemy] = useState({
+    x: 0,
+    y: 0,
   });
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
 
@@ -138,6 +143,7 @@ export default function GameAreaPracticeMatter(props:props) {
   const engineRef = useRef(Engine.create());
   const runnerRef = useRef(Runner.create());
   const playerBodyRef = useRef<Matter.Body | null>(null);
+  const player2BodyRef = useRef<Matter.Body | null>(null);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const cellSize = 17
 
@@ -225,8 +231,8 @@ export default function GameAreaPracticeMatter(props:props) {
 
 
 
-    const initialX = config.containerWidth / 2;
-    const initialY = config.containerHeight / 2;
+    const initialX = 20;
+    const initialY = 20;
     const player = Bodies.circle(
       initialX,
       initialY,
@@ -236,11 +242,23 @@ export default function GameAreaPracticeMatter(props:props) {
     playerBodyRef.current = player;
     Composite.add(engine.world, player);
 
+    const player2 = Bodies.circle(
+      20,
+      50,
+      config.ballRadius,
+      config.playerOptions
+    );
+    player2BodyRef.current = player2
+    Composite.add(engine.world, player2);
 
+    
     const updateCallback = () => {
-
+      
       const playerBody = playerBodyRef.current;
-      if (!playerBody) return;
+      const player2Body = player2BodyRef.current;
+      if (!playerBody || !player2Body) return;
+
+      setRenderEnemy({ x: player2Body.position.x, y: player2Body.position.y });
 
 
       let forceX = 0;
@@ -360,7 +378,7 @@ export default function GameAreaPracticeMatter(props:props) {
 
   return (
    <div> 
-    <BackButton setMenuState={setMenuState} />
+    <BackButton setMenuState={setMenuState} menuState={menuState}/>
     <div
       ref={sceneRef}
       style={{
@@ -377,6 +395,16 @@ export default function GameAreaPracticeMatter(props:props) {
           height: `${config.ballRadius * 2}px`,
 
           transform: `translate(${renderPosition.x - config.ballRadius}px, ${renderPosition.y - config.ballRadius}px)`,
+
+        }}
+      />
+      <div
+        className="absolute rounded-full bg-green-500"
+        style={{
+          width: `${config.ballRadius * 2}px`,
+          height: `${config.ballRadius * 2}px`,
+
+          transform: `translate(${renderEnemy.x - config.ballRadius}px, ${renderEnemy.y - config.ballRadius}px)`,
 
         }}
       />
@@ -407,17 +435,15 @@ export default function GameAreaPracticeMatter(props:props) {
         )
       )}
 
-      <div className="absolute top-24 right-2 text-white text-xs font-mono">
+      <div className="absolute top-2 right-2 text-white text-xs font-mono">
         Velocity: X: {velocity.x.toFixed(2)}, Y: {velocity.y.toFixed(2)}
         <br />
         Position: X: {renderPosition.x.toFixed(0)}, Y: {renderPosition.y.toFixed(0)}
       </div>
-      <div className="absolute top-2 right-2 text-white text-xs font-mono">
-        Skill 1: {playerSetting.skills.skill1.isInCooldown ? "On Cooldown" : "Ready"}
-        <br />
-        Skill 2: {playerSetting.skills.skill2.isInCooldown ? "On Cooldown" : "Ready"}
-        <br />
-        Skill 3: {playerSetting.skills.skill3.isInCooldown ? "On Cooldown" : "Ready"}
+      <div className="absolute bottom-96 right-24 text-white text-xs font-mono flex flex-col gap-[20px]">
+        <button disabled={playerSetting.skills.skill1.isInCooldown} className={`border bg-black p-[20px] rounded-[10px] ${playerSetting.skills.skill1.isInCooldown ? "border-red-500" : "border-green-500"}`}>Skill 1: {playerSetting.skills.skill1.isInCooldown ? "In Cooldown" : "Ready"}</button>
+        <button disabled={playerSetting.skills.skill2.isInCooldown} className={`border bg-black p-[20px] rounded-[10px] ${playerSetting.skills.skill2.isInCooldown ? "border-red-500" : playerSetting.skills.skill2.usedState ? "border-yellow-500" : "border-green-500"}`}>Skill 2: {playerSetting.skills.skill2.isInCooldown ? "In Cooldown" : "Ready"}</button>
+        <button disabled={playerSetting.skills.skill3.isInCooldown} className={`border bg-black p-[20px] rounded-[10px] ${playerSetting.skills.skill3.isInCooldown ? "border-red-500" : "border-green-500"}`}>Skill 3: {playerSetting.skills.skill3.isInCooldown ? "In Cooldown" : "Ready"}</button>
       </div>
     </div>
    </div>

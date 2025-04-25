@@ -1,5 +1,4 @@
 import BackButton from "../_components/back_button";
-import GameAreaPractice from "../game_container/game_area_practice";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;

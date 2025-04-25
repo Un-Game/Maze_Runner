@@ -42,6 +42,7 @@ const Login = (props: props) => {
                 setMenuState("");
             }
         } catch (error) {
+            console.log(error);
             setError("Invalid email or password");
         } finally {
             setLoading(false);

@@ -196,8 +196,8 @@ export default function GameAreaPracticeMatter(props:props) {
       ),
     ];
 
-    let mazeBody = [];
-    let finishPoint = [];
+    const mazeBody = [];
+    const finishPoint = [];
 
     for (let row = 0; row < maze.length; row++) {
       for (let col = 0; col < maze[row].length; col++) {

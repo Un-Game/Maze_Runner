@@ -19,7 +19,7 @@ export default function GameAreaTest(props: props) {
     rows: 10,
     cellSize: 20,
   });
-  const [start, setStart] = useState({ x: 0, y: 0 });
+  // const [start, setStart] = useState({ x: 0, y: 0 });
   const [exit, setExit] = useState({ x: 0, y: 0 });
   const [spawn, setSpawn] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -210,7 +210,7 @@ export default function GameAreaTest(props: props) {
     const acceleration = accelerationBase + difficulty * 0.1;
     const maxSpeed = maxSpeedBase + difficulty * 0.3;
 
-    let newVelocity = { ...velocity };
+    const newVelocity = { ...velocity };
 
     if (keysPressed.current["w"]) newVelocity.y -= acceleration;
     if (keysPressed.current["s"]) newVelocity.y += acceleration;
@@ -223,8 +223,8 @@ export default function GameAreaTest(props: props) {
     newVelocity.x = Math.max(-maxSpeed, Math.min(maxSpeed, newVelocity.x));
     newVelocity.y = Math.max(-maxSpeed, Math.min(maxSpeed, newVelocity.y));
 
-    let newX = position.x + newVelocity.x;
-    let newY = position.y + newVelocity.y;
+    const  newX = position.x + newVelocity.x;
+    const newY = position.y + newVelocity.y;
 
     let updatedX = position.x;
     let updatedY = position.y;
@@ -330,7 +330,7 @@ export default function GameAreaTest(props: props) {
 
     setMazeSize({ cols, rows, cellSize });
     setMaze(newMaze);
-    setStart({ x: startX, y: startY });
+    // setStart({ x: startX, y: startY });
     setExit(newExit);
     setSpawn(newSpawn);
 

@@ -27,8 +27,8 @@ export default function MapMaker(props: props) {
     setGrid((prev) => {
       const newGrid = prev.map((rowArr) => [...rowArr]); // deep copy
       newGrid[row][col] === 0
-        ? (newGrid[row][col] = 1)
-        : (newGrid[row][col] = 0);
+        ? newGrid[row][col] = 1
+        : newGrid[row][col] = 0
       return newGrid;
     });
     console.log(`Row: ${row}, Col: ${col}`);
@@ -38,8 +38,8 @@ export default function MapMaker(props: props) {
     setGrid((prev) => {
       const newGrid = prev.map((rowArr) => [...rowArr]); // deep copy
       newGrid[row][col] === 0
-        ? (newGrid[row][col] = 1)
-        : (newGrid[row][col] = 0);
+        ? newGrid[row][col] = 1
+        : newGrid[row][col] = 0;
       return newGrid;
     });
     console.log(`Row: ${row}, Col: ${col}`);

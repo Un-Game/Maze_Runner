@@ -1,11 +1,14 @@
 import { Shield } from "lucide-react"
 import { useRef } from "react";
+import { useUser } from "@/context/UserProvider";
 
 type props = {
     setMenuState: React.Dispatch<React.SetStateAction<string>>
 }
 
 export default function Header(props: props) {
+
+    const user = useUser();
     const { setMenuState } = props;
       const audioRef = useRef<HTMLAudioElement>(null);
     
@@ -21,7 +24,7 @@ export default function Header(props: props) {
         <div className="w-screen h-[100px] bg-black/50 flex justify-center">
             <div className="h-full w-[calc(100vw-400px)]">
                 <div className="flex justify-between h-full items-center px-[50px]">
-                    <button className="w-[100px] h-[50px]" onClick={() => {setMenuState("0")}}>
+                    <button className="w-[100px] h-[50px]" onClick={() => {setMenuState("")}}>
                         <img src="./game-logo.png" className="w-full h-full"/>
                     </button>
                     <button onClick={playAudio}>Play Music</button>
@@ -31,8 +34,8 @@ export default function Header(props: props) {
             <button className="h-full w-[400px] bg-[linear-gradient(90deg,_rgba(2,0,36,1)_0%,_rgba(9,9,121,1)_50%,_rgba(0,212,255,1)_100%)] p-[30px] transition-colors duration-[1s] flex items-center justify-between">
                 <div className="text-[22px] flex items-center gap-[10px]">
                     <div className="text-start">
-                        <div>Username</div>
-                        <div>lvl: 100</div>
+                        <div>{user.username}</div>
+                        <div>Lvl: {Math.floor(user.exp/100)+1}</div>
                     </div>
                     <div className="w-[40px] h-[40px]">
                         <Shield className=" w-full h-full" stroke="yellow" fill="gray"/>
@@ -40,7 +43,10 @@ export default function Header(props: props) {
                     </div>
                 </div>
                 <div className="w-[50px] h-[50px]">
-                    <img src="./globe.svg" className="w-full h-full object-cover" />
+                    {user.avatar ? (
+                        <img src={user.avatar} className="w-full h-full object-cover rounded-[50%]" />
+                    ) : (
+                    <img src="./globe.svg" className="w-full h-full object-cover" />)}
                     {/* Avatar image placeholder */}
                 </div>
             </button>

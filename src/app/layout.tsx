@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/context/ThemeContext";
+import { UserProvider } from '@/context/UserProvider';
 import { Inter } from "next/font/google";
 import { Poetsen_One } from "next/font/google";
 import "./globals.css";
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className={`${poetsenOne.className}`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <UserProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </UserProvider>
       </body>
     </html>
   );

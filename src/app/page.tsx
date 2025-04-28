@@ -10,10 +10,17 @@ import GameAreaTest from "@/components/game_container/game_area_test";
 import GameAreaPracticeMatter from "@/components/game_container/game_area_practice";
 import { useEffect, useState } from "react";
 import Login from "@/components/login/Login";
+import ChatBox from "@/components/chat_system/ChatBox";
+import Signup from "@/components/signup/Signup";
+import { useUser } from "@/context/UserProvider";
+import { UserRoundPlus } from "lucide-react";
+import Friend_list from "@/components/friends_list/Friends_list";
 
 export default function Game() {
 
   const [menuState, setMenuState] = useState("");
+  const [friendMenu, setFriendMenu] = useState(false);
+  const user = useUser();
 
   useEffect(()=> {
     const token = localStorage.getItem("token");
@@ -22,12 +29,27 @@ export default function Game() {
     }else{
       setMenuState("");
     }
+
+    if(menuState !== "login" && menuState !== "signup") {
+      window.addEventListener("keydown", (e) => {
+        if(e.key === "Enter") {
+          document.getElementById("chat_input")?.focus();
+        }
+      });
+    }
+    return () => {
+      window.removeEventListener("keydown", ()=>{document.getElementById("chat_input")?.focus();});
+    };
+
   },[])
 
   return menuState === "login" ? (
     <Login setMenuState={setMenuState}/>
-  ) : (
+  ) : menuState === "signup" ? (
+    <Signup setMenuState={setMenuState}/>
+  ) : user ? (
     <div className="w-screen h-screen">
+      {friendMenu && <Friend_list setFriendMenu={setFriendMenu}/>}
       <img src="./nature-background.jpg" className="w-full h-full absolute object-cover z-[-1] opacity-20"/>
       <Header setMenuState = {setMenuState}/>
       {menuState === "" && (<MainMenu setMenuState = {setMenuState}/>)}
@@ -40,6 +62,18 @@ export default function Game() {
       {menuState === "22" && (<GameAreaTest setMenuState = {setMenuState} menuState = {menuState}/>)}
 
       {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
+        {/* <ChatBox/> */}
+        <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
+          <div>Friends</div>
+          <UserRoundPlus />
+        </button>
+    </div>
+  ) : (
+    <div className="w-screen h-screen flex justify-center items-center">
+      <div className="flex flex-col">
+        <div className="border-t-[10px] border-cyan-400 bg-gradient-to-r from-purple-400 to-pink-400 w-[40px] h-[40px] rounded-full animate-spin"></div>
+        <div>Loading...</div>
+      </div>
     </div>
   );
 }

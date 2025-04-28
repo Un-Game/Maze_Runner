@@ -38,6 +38,8 @@ const Login = (props: props) => {
                 password
             });
             if (response.data.token) {
+                console.log(response.data);
+                
                 localStorage.setItem("token", response.data.token);
                 setMenuState("");
             }

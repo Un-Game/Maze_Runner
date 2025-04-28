@@ -1,3 +1,4 @@
+import { useUser } from "@/context/UserProvider";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
@@ -7,8 +8,13 @@ export default function ChatBox() {
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
 
+  const user = useUser();
+
   useEffect(() => {
-    socketRef.current = io("http://localhost:999");
+    socketRef.current = io("http://localhost:999/chat",{
+      withCredentials: true
+    });
+    socketRef.current.emit("identify",user._id);
 
     socketRef.current.on("chat-message", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
@@ -18,6 +24,7 @@ export default function ChatBox() {
       socketRef.current.disconnect();
     };
   }, []);
+  
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -25,6 +32,9 @@ export default function ChatBox() {
 
   const handleSendMessage = () => {
     if (socketRef.current && input.trim() !== "") {
+      // input => chatGroupId
+      // input => hen
+      // input =>> yugdeg message
       socketRef.current.emit("chat-message", { text: input });
       setInput("");
     }
@@ -40,13 +50,12 @@ export default function ChatBox() {
     <div className="w-full max-w-md h-[600px] p-4 bg-gradient-to-b from-pink-600/30 via-purple-600/30 to-black text-cyan-400 flex flex-col rounded-lg shadow-lg absolute bottom-0 right-0 m-12">
       <div className="flex-1 overflow-y-auto mb-2 pr-2">
         {messages.map((msg, idx) => (
-          <div 
-            key={idx} 
-            className={`mb-2 p-2 rounded ${
-              msg.userId === socketRef.current?.id 
-                ? "bg-cyan-900 ml-auto max-w-xs" 
-                  : "bg-gray-900 max-w-xs"
-            }`}
+          <div
+            key={idx}
+            className={`mb-2 p-2 rounded ${msg.userId === socketRef.current?.id
+              ? "bg-cyan-900 ml-auto max-w-xs"
+              : "bg-gray-900 max-w-xs"
+              }`}
           >
             {msg.text}
             <div className="text-xs text-gray-500 mt-1">
@@ -66,7 +75,7 @@ export default function ChatBox() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button 
+        <button
           className="bg-cyan-700 hover:bg-cyan-600 text-white px-4 rounded"
           onClick={handleSendMessage}
         >

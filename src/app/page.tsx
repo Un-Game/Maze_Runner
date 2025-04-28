@@ -20,53 +20,55 @@ export default function Game() {
 
   const [menuState, setMenuState] = useState("");
   const [friendMenu, setFriendMenu] = useState(false);
-  const user = useUser();
 
-  useEffect(()=> {
+  const user = useUser();
+  
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
-    if(!token) {
+    if (!token) {
       setMenuState("login")
-    }else{
+    } else {
       setMenuState("");
     }
 
-    if(menuState !== "login" && menuState !== "signup") {
+    if (menuState !== "login" && menuState !== "signup") {
       window.addEventListener("keydown", (e) => {
-        if(e.key === "Enter") {
+        if (e.key === "Enter") {
           document.getElementById("chat_input")?.focus();
         }
       });
     }
     return () => {
-      window.removeEventListener("keydown", ()=>{document.getElementById("chat_input")?.focus();});
+      window.removeEventListener("keydown", () => { document.getElementById("chat_input")?.focus(); });
     };
 
-  },[])
+  }, [])
 
   return menuState === "login" ? (
-    <Login setMenuState={setMenuState}/>
+    <Login setMenuState={setMenuState} />
   ) : menuState === "signup" ? (
-    <Signup setMenuState={setMenuState}/>
+    <Signup setMenuState={setMenuState} />
   ) : user ? (
     <div className="w-screen h-screen">
-      {friendMenu && <Friend_list setFriendMenu={setFriendMenu}/>}
-      <img src="./nature-background.jpg" className="w-full h-full absolute object-cover z-[-1] opacity-20"/>
-      <Header setMenuState = {setMenuState}/>
-      {menuState === "" && (<MainMenu setMenuState = {setMenuState}/>)}
+      {friendMenu && <Friend_list setFriendMenu={setFriendMenu} />}
+      <img src="./nature-background.jpg" className="w-full h-full absolute object-cover z-[-1] opacity-20" />
+      <Header setMenuState={setMenuState} />
+      {menuState === "" && (<MainMenu setMenuState={setMenuState} />)}
 
-      {menuState === "1" && (<Multiplayer setMenuState = {setMenuState} menuState = {menuState}/>)}
-      {menuState === "2" && (<Solo setMenuState = {setMenuState} menuState = {menuState}/>)}
-      {menuState === "3" && (<Settings setMenuState = {setMenuState} menuState = {menuState}/>)}
+      {menuState === "1" && (<Multiplayer setMenuState={setMenuState} menuState={menuState} />)}
+      {menuState === "2" && (<Solo setMenuState={setMenuState} menuState={menuState} />)}
+      {menuState === "3" && (<Settings setMenuState={setMenuState} menuState={menuState} />)}
 
-      {menuState === "21" && (<GameAreaPracticeMatter setMenuState = {setMenuState} menuState = {menuState}/>)}
-      {menuState === "22" && (<GameAreaTest setMenuState = {setMenuState} menuState = {menuState}/>)}
+      {menuState === "21" && (<GameAreaPracticeMatter setMenuState={setMenuState} menuState={menuState} />)}
+      {menuState === "22" && (<GameAreaTest setMenuState={setMenuState} menuState={menuState} />)}
 
-      {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
-        {/* <ChatBox/> */}
-        <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
-          <div>Friends</div>
-          <UserRoundPlus />
-        </button>
+      {menuState === "31" && (<MapMaker setMenuState={setMenuState} menuState={menuState} />)}
+      <ChatBox />
+      <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
+        <div>Friends</div>
+        <UserRoundPlus />
+      </button>
     </div>
   ) : (
     <div className="w-screen h-screen flex justify-center items-center">

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Matter from "matter-js";
 import BackButton from "../_components/back_button";
+import { useKeyBind } from "@/context/KeybindContext";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
@@ -23,10 +24,6 @@ const config = {
     frictionAir: 0.02,
   },
   inputKeys: {
-    up: "w",
-    down: "s",
-    left: "a",
-    right: "d",
     skill1: "c",
     skill2: "f",
     skill3: "t",
@@ -127,6 +124,7 @@ const currMap = {
 const maze = currMap.maze
 
 export default function GameAreaPracticeMatter(props:props) {
+  const {keybinds} = useKeyBind()
   const {setMenuState, menuState} = props
 
   const [renderPosition, setRenderPosition] = useState({
@@ -263,12 +261,12 @@ export default function GameAreaPracticeMatter(props:props) {
 
       let forceX = 0;
       let forceY = 0;
-      if (keysPressed.current[config.inputKeys.up]) forceY -= config.moveForce;
-      if (keysPressed.current[config.inputKeys.down]) forceY += config.moveForce;
-      if (keysPressed.current[config.inputKeys.left]) forceX -= config.moveForce;
-      if (keysPressed.current[config.inputKeys.right]) forceX += config.moveForce;
+      if (keysPressed.current[keybinds.up]) forceY -= config.moveForce;
+      if (keysPressed.current[keybinds.down]) forceY += config.moveForce;
+      if (keysPressed.current[keybinds.left]) forceX -= config.moveForce;
+      if (keysPressed.current[keybinds.right]) forceX += config.moveForce;
 
-      if (keysPressed.current[config.inputKeys.skill1] && !playerSetting.skills.skill1.isInCooldown) {
+      if (keysPressed.current[keybinds.skillOne] && !playerSetting.skills.skill1.isInCooldown) {
         playerSetting.skills.skill1.isInCooldown = true;
         config.maxSpeed = 7.5;
 
@@ -281,7 +279,7 @@ export default function GameAreaPracticeMatter(props:props) {
         }, playerSetting.skills.skill1.cooldown);
       };
 
-      if( keysPressed.current[config.inputKeys.skill2] && !playerSetting.skills.skill2.isInCooldown) {
+      if( keysPressed.current[keybinds.skillTwo] && !playerSetting.skills.skill2.isInCooldown) {
 
         if( playerSetting.skills.skill2.usedState) {
 
@@ -305,7 +303,7 @@ export default function GameAreaPracticeMatter(props:props) {
         }
       }
 
-      if( keysPressed.current[config.inputKeys.skill3] && !playerSetting.skills.skill3.isInCooldown) {
+      if( keysPressed.current[keybinds.skillThree] && !playerSetting.skills.skill3.isInCooldown) {
         playerSetting.skills.skill3.isInCooldown = true;
         Matter.Body.set(playerBody, {isSensor: true});
         setTimeout(() => {

@@ -15,6 +15,7 @@ import Signup from "@/components/signup/Signup";
 import { useUser } from "@/context/UserProvider";
 import { UserRoundPlus } from "lucide-react";
 import Friend_list from "@/components/friends_list/Friends_list";
+import Key_Bind from "@/components/key_bind/key_bind";
 
 export default function Game() {
 
@@ -63,12 +64,13 @@ export default function Game() {
       {menuState === "21" && (<GameAreaPracticeMatter setMenuState={setMenuState} menuState={menuState} />)}
       {menuState === "22" && (<GameAreaTest setMenuState={setMenuState} menuState={menuState} />)}
 
-      {menuState === "31" && (<MapMaker setMenuState={setMenuState} menuState={menuState} />)}
-      <ChatBox />
-      <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
-        <div>Friends</div>
-        <UserRoundPlus />
-      </button>
+      {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
+      {menuState === "32" && (<Key_Bind setMenuState = {setMenuState} menuState = {menuState}/>)}
+        {/* <ChatBox/> */}
+        <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
+          <div>Friends</div>
+          <UserRoundPlus />
+        </button>
     </div>
   ) : (
     <div className="w-screen h-screen flex justify-center items-center">

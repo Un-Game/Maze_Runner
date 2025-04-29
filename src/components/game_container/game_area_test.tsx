@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import BackButton from "../_components/back_button";
+import { getKeyBindings } from "../_components/key_binding";
+import { useKeyBind } from "@/context/KeybindContext";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
@@ -7,7 +9,8 @@ type props = {
 };
 
 export default function GameAreaTest(props: props) {
-  const { setMenuState,menuState } = props;
+  const { keybinds } = useKeyBind();
+  const { setMenuState, menuState } = props;
   const baseWidth = 900;
   const baseHeight = 600;
   const maxWidth = 1300;
@@ -19,7 +22,6 @@ export default function GameAreaTest(props: props) {
     rows: 10,
     cellSize: 20,
   });
-  // const [start, setStart] = useState({ x: 0, y: 0 });
   const [exit, setExit] = useState({ x: 0, y: 0 });
   const [spawn, setSpawn] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -52,9 +54,9 @@ export default function GameAreaTest(props: props) {
         if (newTimer <= 0) {
           clearInterval(timerDeduction);
           setGameOver(true);
-          return 0; // Ensure it doesn't go below 0
+          return 0;
         }
-        return Math.round(newTimer); // Round to nearest integer
+        return Math.round(newTimer);
       });
     }, 1000);
 
@@ -212,10 +214,10 @@ export default function GameAreaTest(props: props) {
 
     const newVelocity = { ...velocity };
 
-    if (keysPressed.current["w"]) newVelocity.y -= acceleration;
-    if (keysPressed.current["s"]) newVelocity.y += acceleration;
-    if (keysPressed.current["a"]) newVelocity.x -= acceleration;
-    if (keysPressed.current["d"]) newVelocity.x += acceleration;
+    if (keysPressed.current[keybinds.up]) newVelocity.y -= acceleration;
+    if (keysPressed.current[keybinds.down]) newVelocity.y += acceleration;
+    if (keysPressed.current[keybinds.left]) newVelocity.x -= acceleration;
+    if (keysPressed.current[keybinds.right]) newVelocity.x += acceleration;
 
     newVelocity.x *= friction;
     newVelocity.y *= friction;
@@ -223,7 +225,7 @@ export default function GameAreaTest(props: props) {
     newVelocity.x = Math.max(-maxSpeed, Math.min(maxSpeed, newVelocity.x));
     newVelocity.y = Math.max(-maxSpeed, Math.min(maxSpeed, newVelocity.y));
 
-    const  newX = position.x + newVelocity.x;
+    const newX = position.x + newVelocity.x;
     const newY = position.y + newVelocity.y;
 
     let updatedX = position.x;
@@ -285,7 +287,7 @@ export default function GameAreaTest(props: props) {
     ) {
       setInputLocked(true);
       setTimeout(() => {
-        setDifficulty((prev) => Math.min(prev + 0.3, 4)); // Clamp difficulty to 4
+        setDifficulty((prev) => Math.min(prev + 0.3, 4));
         setInputLocked(false);
       }, 500);
     }
@@ -330,7 +332,6 @@ export default function GameAreaTest(props: props) {
 
     setMazeSize({ cols, rows, cellSize });
     setMaze(newMaze);
-    // setStart({ x: startX, y: startY });
     setExit(newExit);
     setSpawn(newSpawn);
 
@@ -364,7 +365,7 @@ export default function GameAreaTest(props: props) {
 
   return (
     <div>
-      <BackButton setMenuState={setMenuState} menuState={menuState}/>
+      <BackButton setMenuState={setMenuState} menuState={menuState} />
       <div className="flex flex-col items-center">
         <h2 className="mb-2 font-bold">Difficulty: {difficulty.toFixed(1)}</h2>
         <h2 className="font-bold">Timer: {timer}</h2>

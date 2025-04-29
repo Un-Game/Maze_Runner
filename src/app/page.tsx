@@ -66,7 +66,7 @@ export default function Game() {
 
       {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
       {menuState === "32" && (<Key_Bind setMenuState = {setMenuState} menuState = {menuState}/>)}
-        {/* <ChatBox/> */}
+        <ChatBox/>
         <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
           <div>Friends</div>
           <UserRoundPlus />

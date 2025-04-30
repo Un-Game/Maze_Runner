@@ -1,4 +1,5 @@
 import BackButton from "../_components/back_button";
+import { LobbyPage } from "./lobby";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
@@ -12,6 +13,7 @@ export default function Multiplayer(props: props) {
       <BackButton setMenuState={setMenuState} menuState ={menuState}/>
       <div className="w-[100vw] flex flex-grow justify-center items-center">
         <div className="w-fit h-fit bg-pink-200/20">
+        <LobbyPage/>
         </div>
       </div>
     </div>

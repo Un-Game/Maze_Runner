@@ -11,12 +11,13 @@ export default function ChatBox() {
   const user = useUser();
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:999/chat",{
+    socketRef.current = io("http://localhost:999",{
       withCredentials: true
     });
     socketRef.current.emit("identify",user._id);
 
-    socketRef.current.on("chat-message", (message) => {
+    socketRef.current.on("chat:message", (message) => {
+      console.log(message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -32,10 +33,7 @@ export default function ChatBox() {
 
   const handleSendMessage = () => {
     if (socketRef.current && input.trim() !== "") {
-      // input => chatGroupId
-      // input => hen
-      // input =>> yugdeg message
-      socketRef.current.emit("chat-message", { text: input });
+      socketRef.current.emit("chat:message", { text: input });
       setInput("");
     }
   };
@@ -52,7 +50,7 @@ export default function ChatBox() {
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`mb-2 p-2 rounded ${msg.userId === socketRef.current?.id
+            className={`mb-2 p-2 rounded ${msg.userId === user._id
               ? "bg-cyan-900 ml-auto max-w-xs"
               : "bg-gray-900 max-w-xs"
               }`}

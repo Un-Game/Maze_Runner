@@ -105,7 +105,12 @@ export default function Friend_list(props: props) {
     }
     const declineRequest = async(id) => {
         try{
-            const resp = await axios.delete("http://localhost:999/request/decline");
+            const resp = await axios.delete("http://localhost:999/request/decline",{
+                data: {
+                    senderId: id,
+                    receiverId: user._id
+                }
+            });
             console.log(resp);
         } catch(err){
             console.log(err);

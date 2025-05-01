@@ -18,7 +18,7 @@ export default function ChatBox(props) {
   const user = useUser();
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:999", {
+    socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
       withCredentials: true
     });
     socketRef.current.emit("identify", user._id);
@@ -138,7 +138,10 @@ export default function ChatBox(props) {
             </div>
           )) : activeUser === null ?
             user.friends.map((friend, index) => (
-              <div key={index} className="w-full h-[50px] flex gap-[20px]" onClick={() => setActiveUser(friend._id)}>
+              <div key={index} className="w-full my-[10px] p-[10px] py-[15px] rounded-[5px] bg-black/50 flex gap-[20px]" onClick={() => setActiveUser(friend._id)}>
+                <div className="w-[30px] h-[30px] rounded-full">
+                  <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-full h-full object-cover"/>
+                </div>
                 <div>{friend.username}</div>
               </div>
             ))
@@ -164,7 +167,7 @@ export default function ChatBox(props) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex h-10 gap-2">
+      {activeTab === "global" || activeUser ? <div className="flex h-10 gap-2">
         <input
           id="chat_input"
           type="text"
@@ -180,7 +183,7 @@ export default function ChatBox(props) {
         >
           Send
         </button>
-      </div>
+      </div> : null}
     </div>
   );
 }

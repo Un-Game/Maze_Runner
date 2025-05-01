@@ -8,8 +8,10 @@ export default function ChatBox(props) {
   const { setShowChat } = props;
 
   const [messages, setMessages] = useState([]);
+  const [dms, setDms] = useState({});
   const [input, setInput] = useState("");
   const [activeTab, setActiveTab] = useState("global");
+  const [activeUser, setActiveUser] = useState(null);
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -26,21 +28,52 @@ export default function ChatBox(props) {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
+    socketRef.current.on("chat:dm", (dm) => {
+      console.log(dm);
+
+      setDms((prevDmsObj) => {
+        const newDmsObj = { ...prevDmsObj };
+
+        const currentUserId = user._id;
+        const conversationPartnerId = dm.userId === currentUserId ? dm.to : dm.userId;
+
+        if (newDmsObj[conversationPartnerId]) {
+          newDmsObj[conversationPartnerId] = [...newDmsObj[conversationPartnerId], dm];
+        } else {
+          newDmsObj[conversationPartnerId] = [dm];
+        }
+
+        return newDmsObj;
+      });
+    });
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
 
+  console.log(dms);
+  
+
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [dms]);
 
   const handleSendMessage = () => {
     if (socketRef.current && input.trim() !== "") {
-      socketRef.current.emit("chat:message", { text: input, channel: activeTab });
+      if (activeTab === "global") {
+        socketRef.current.emit("chat:message", { text: input, channel: activeTab });
+      } else {
+        socketRef.current.emit("chat:dm", { text: input, to: activeUser })
+      }
       setInput("");
     }
   };
+
+  //680f6b6f29f03262ff0f44ae
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -50,7 +83,6 @@ export default function ChatBox(props) {
 
   const tabs = [
     { id: "global", label: "Global" },
-    { id: "local", label: "Local" },
     { id: "private", label: "Private" }
   ];
 
@@ -77,38 +109,61 @@ export default function ChatBox(props) {
               />
             )}
             <button
-              className={`relative w-full py-2 text-sm font-medium transition-colors duration-200 z-10 ${
-                activeTab === tab.id ? "text-white" : "text-gray-400"
-              }`}
-              onClick={() => setActiveTab(tab.id)}
+              className={`relative w-full py-2 text-sm font-medium transition-colors duration-200 z-10 ${activeTab === tab.id ? "text-white" : "text-gray-400"
+                }`}
+              onClick={() => { setActiveTab(tab.id); setActiveUser(null) }}
             >
               {tab.label}
             </button>
           </div>
         ))}
       </div>
-      
+
       <div className="flex-1 overflow-y-auto mb-2 pr-2 chat-scroll">
-        {messages
-          .filter(msg => !msg.channel || msg.channel === activeTab)
-          .map((msg, idx) => (
+        {activeTab === "global" ?
+          messages.map((msg, index) => (
             <div
-              key={idx}
-              className={`mb-2 p-2 rounded ${
-                msg.userId === user._id
-                  ? "bg-cyan-900 ml-auto max-w-xs"
-                  : "bg-gray-900 max-w-xs"
-              }`}
+              key={index}
+              className={`mb-2 p-2 rounded max-w-xs ${msg.userId === user._id
+                ? "bg-cyan-900 ml-auto"
+                : "bg-gray-900 mr-auto"
+                }`}
             >
-              {msg.text}
+              <div>{msg.text}</div>
               <div className="text-xs text-gray-500 mt-1">
-                {msg.userId !== "system" && new Date(msg.timestamp).toLocaleTimeString()}
+                {msg.userId !== "system" && msg.timestamp
+                  ? new Date(msg.timestamp).toLocaleTimeString()
+                  : null}
               </div>
             </div>
-          ))}
+          )) : activeUser === null ?
+            user.friends.map((friend, index) => (
+              <div key={index} className="w-full h-[50px] flex gap-[20px]" onClick={() => setActiveUser(friend._id)}>
+                <div>{friend.username}</div>
+              </div>
+            ))
+            : (
+              dms[activeUser] && dms[activeUser].map((msg, index) => (
+                <div
+                  key={index}
+                  className={`mb-2 p-2 rounded max-w-xs ${msg.userId === user._id
+                    ? "bg-cyan-900 ml-auto"
+                    : "bg-gray-900 mr-auto"
+                    }`}
+                >
+                  <div>{msg.text}</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {msg.userId !== "system" && msg.timestamp
+                      ? new Date(msg.timestamp).toLocaleTimeString()
+                      : null}
+                  </div>
+                </div>
+              ))
+            )
+        }
         <div ref={messagesEndRef} />
       </div>
-      
+
       <div className="flex h-10 gap-2">
         <input
           id="chat_input"

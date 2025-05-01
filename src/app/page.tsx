@@ -38,6 +38,7 @@ export default function Game() {
     if (menuState !== "login" && menuState !== "signup") {
       window.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
+          showChat ? null : setShowChat(true);
           document.getElementById("chat_input")?.focus();
         }
       });
@@ -76,7 +77,7 @@ export default function Game() {
             initial={{ opacity: 0, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.50 }}
+            transition={{ duration: 0.20 }}
           >
             <ChatBox setShowChat={setShowChat} />
           </motion.div>

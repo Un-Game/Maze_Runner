@@ -134,7 +134,7 @@ export default function Friend_list(props: props) {
     },[])
 
     return (
-        <div className="w-full h-full fixed flex z-10">
+        <div className="w-full h-full fixed flex z-20">
             <ToastContainer
                 position="top-center"
                 autoClose={2000}

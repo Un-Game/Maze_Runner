@@ -13,14 +13,16 @@ import Login from "@/components/login/Login";
 import ChatBox from "@/components/chat_system/ChatBox";
 import Signup from "@/components/signup/Signup";
 import { useUser } from "@/context/UserProvider";
-import { UserRoundPlus } from "lucide-react";
+import { MessageCircleMore, UserRoundPlus } from "lucide-react";
 import Friend_list from "@/components/friends_list/Friends_list";
 import Key_Bind from "@/components/key_bind/key_bind";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Game() {
 
   const [menuState, setMenuState] = useState("");
   const [friendMenu, setFriendMenu] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   const user = useUser();
   
@@ -66,7 +68,24 @@ export default function Game() {
 
       {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
       {menuState === "32" && (<Key_Bind setMenuState = {setMenuState} menuState = {menuState}/>)}
-        <ChatBox/>
+        {showChat && 
+        <AnimatePresence>
+        {showChat && (
+          <motion.div
+            key="chatbox"
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.50 }}
+          >
+            <ChatBox setShowChat={setShowChat} />
+          </motion.div>
+        )}
+      </AnimatePresence>}
+        {!showChat && <button className="flex gap-2 absolute right-0 bottom-16 p-5 bg-black/30 rounded-lg" onClick={() => setShowChat(true)}>
+          <div>Chat</div>
+          <MessageCircleMore />
+        </button>}
         <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
           <div>Friends</div>
           <UserRoundPlus />

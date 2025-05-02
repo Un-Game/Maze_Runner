@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import BackButton from "../_components/back_button";
-import { getKeyBindings } from "../_components/key_binding";
 import { useKeyBind } from "@/context/KeybindContext";
 
 type props = {
@@ -296,11 +295,15 @@ export default function GameAreaTest(props: props) {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    keysPressed.current[event.key.toLowerCase()] = true;
+    const key = event.key.toLowerCase(); 
+    console.log(`Key down: ${key}`); 
+    keysPressed.current[key] = true;
   };
-
+  
   const handleKeyUp = (event: KeyboardEvent) => {
-    keysPressed.current[event.key.toLowerCase()] = false;
+    const key = event.key.toLowerCase(); 
+    console.log(`Key up: ${key}`);
+    keysPressed.current[key] = false;
   };
 
   useEffect(() => {

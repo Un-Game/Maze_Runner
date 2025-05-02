@@ -9,7 +9,7 @@ const KBBS3 = () => {
     const value = e.target.value;
 
     if (/^[a-zA-Z]$/.test(value)) {
-      updateKeybind("skillThree", value.toUpperCase());
+      updateKeybind("skillThree", value);
     } else if (value === "") {
       updateKeybind("skillThree", "");
     }

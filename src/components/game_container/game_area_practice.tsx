@@ -145,13 +145,17 @@ export default function GameAreaPracticeMatter(props:props) {
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const cellSize = 17
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    keysPressed.current[event.key.toLowerCase()] = true;
-  }, []);
-
-  const handleKeyUp = useCallback((event: KeyboardEvent) => {
-    keysPressed.current[event.key.toLowerCase()] = false;
-  }, []);
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const key = event.key.toLowerCase(); 
+    console.log(`Key down: ${key}`); 
+    keysPressed.current[key] = true;
+  };
+  
+  const handleKeyUp = (event: KeyboardEvent) => {
+    const key = event.key.toLowerCase(); 
+    console.log(`Key up: ${key}`); 
+    keysPressed.current[key] = false;
+  };
 
   useEffect(() => {
     const engine = engineRef.current;

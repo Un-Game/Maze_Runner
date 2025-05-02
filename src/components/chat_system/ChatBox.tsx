@@ -1,17 +1,17 @@
 import { useUser } from "@/context/UserProvider";
-import { X } from "lucide-react";
+import { MessageCircleMore, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { motion } from "framer-motion";
 
 export default function ChatBox(props) {
-  const { setShowChat } = props;
 
   const [messages, setMessages] = useState([]);
   const [dms, setDms] = useState({});
   const [input, setInput] = useState("");
   const [activeTab, setActiveTab] = useState("global");
   const [activeUser, setActiveUser] = useState(null);
+  const [showChat, setShowChat] = useState(false);
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -50,24 +50,22 @@ export default function ChatBox(props) {
       socketRef.current.disconnect();
     };
   }, []);
-
-  console.log(dms);
   
 
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, showChat]);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [dms]);
+  }, [dms, activeUser, showChat]);
 
   const handleSendMessage = () => {
     if (socketRef.current && input.trim() !== "") {
       if (activeTab === "global") {
-        socketRef.current.emit("chat:message", { text: input, channel: activeTab });
+        socketRef.current.emit("chat:message", { text: input, sender: user.username, channel: activeTab });
       } else {
-        socketRef.current.emit("chat:dm", { text: input, to: activeUser })
+        socketRef.current.emit("chat:dm", { text: input, sender: user.username, to: activeUser[0] })
       }
       setInput("");
     }
@@ -86,7 +84,7 @@ export default function ChatBox(props) {
     { id: "private", label: "Private" }
   ];
 
-  return (
+  return showChat ? (
     <div className="w-full max-w-md h-[600px] p-4 bg-gradient-to-b from-pink-600/30 via-purple-600/30 to-black text-cyan-400 flex flex-col rounded-lg shadow-lg absolute bottom-0 right-0 my-18">
       <button
         className="absolute top-0 right-0 w-[40px] h-[40px] p-[8px] rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 transition duration-500 m-[10px]"
@@ -129,8 +127,9 @@ export default function ChatBox(props) {
                 : "bg-gray-900 mr-auto"
                 }`}
             >
+              <div className="text-[15px] text-gray-500">{msg.sender}</div>
               <div>{msg.text}</div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-500 mt-1 text-end">
                 {msg.userId !== "system" && msg.timestamp
                   ? new Date(msg.timestamp).toLocaleTimeString()
                   : null}
@@ -138,7 +137,7 @@ export default function ChatBox(props) {
             </div>
           )) : activeUser === null ?
             user.friends.map((friend, index) => (
-              <div key={index} className="w-full my-[10px] p-[10px] py-[15px] rounded-[5px] bg-black/50 flex gap-[20px]" onClick={() => setActiveUser(friend._id)}>
+              <div key={index} className="w-full my-[10px] p-[10px] py-[15px] rounded-[5px] bg-black/50 flex gap-[20px] cursor-pointer" onClick={() => setActiveUser([friend._id, friend.username, friend.avatar])}>
                 <div className="w-[30px] h-[30px] rounded-full">
                   <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-full h-full object-cover"/>
                 </div>
@@ -146,22 +145,30 @@ export default function ChatBox(props) {
               </div>
             ))
             : (
-              dms[activeUser] && dms[activeUser].map((msg, index) => (
-                <div
-                  key={index}
-                  className={`mb-2 p-2 rounded max-w-xs ${msg.userId === user._id
-                    ? "bg-cyan-900 ml-auto"
-                    : "bg-gray-900 mr-auto"
-                    }`}
-                >
-                  <div>{msg.text}</div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {msg.userId !== "system" && msg.timestamp
-                      ? new Date(msg.timestamp).toLocaleTimeString()
-                      : null}
+              <>
+                <div className="w-full h-[40px] bg-white/20 sticky top-0 flex items-center gap-[15px] px-[10px] rounded-[5px] backdrop-blur-[10px] mb-[10px]">
+                  <div className="w-[30px] h-[30px] rounded-full overflow-hidden">
+                    <img src={activeUser[2] ? activeUser[2] : "./globe.svg"}/>
                   </div>
+                  <div>{activeUser[1]}</div>
                 </div>
-              ))
+                {dms[activeUser[0]] && dms[activeUser[0]].map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`mb-2 p-2 rounded max-w-xs ${msg.userId === user._id
+                      ? "bg-cyan-900 ml-auto"
+                      : "bg-gray-900 mr-auto"
+                    }`}
+                  >
+                    <div>{msg.text}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {msg.userId !== "system" && msg.timestamp
+                        ? new Date(msg.timestamp).toLocaleTimeString()
+                        : null}
+                    </div>
+                  </div>
+                ))}
+              </>
             )
         }
         <div ref={messagesEndRef} />
@@ -185,5 +192,9 @@ export default function ChatBox(props) {
         </button>
       </div> : null}
     </div>
-  );
+  ) : (
+    <button className="flex gap-2 absolute right-0 bottom-16 p-5 bg-black/30 rounded-lg" onClick={() => setShowChat(true)}>
+      <div>Chat</div>
+      <MessageCircleMore />
+    </button>)
 }

@@ -14,7 +14,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async (_id: string) => {
       try {
-        const res = await axios.get(`http://localhost:999/user/${_id}`);
+        const res = await axios.get(`https://maze-runner-backend-1.onrender.com/user/${_id}`);
         setUser(res.data);
       } catch (error) {
         console.error("Fetch user error:", error);
@@ -25,8 +25,8 @@ export const UserProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const decoded = jwtDecode(token) as { date?: { _id?: string } };
-        const { _id } = decoded?.date || {};
+        const decoded = jwtDecode(token) as { user?: { _id?: string } };
+        const { _id } = decoded?.user || {};
         if (_id) {
           console.log(_id);
           fetchUser(_id);

@@ -13,16 +13,14 @@ import Login from "@/components/login/Login";
 import ChatBox from "@/components/chat_system/ChatBox";
 import Signup from "@/components/signup/Signup";
 import { useUser } from "@/context/UserProvider";
-import { MessageCircleMore, UserRoundPlus } from "lucide-react";
+import { UserRoundPlus } from "lucide-react";
 import Friend_list from "@/components/friends_list/Friends_list";
 import Key_Bind from "@/components/key_bind/key_bind";
-import { AnimatePresence, motion } from "framer-motion";
 
 export default function Game() {
 
   const [menuState, setMenuState] = useState("");
   const [friendMenu, setFriendMenu] = useState(false);
-  const [showChat, setShowChat] = useState(false);
 
   const user = useUser();
   
@@ -34,19 +32,6 @@ export default function Game() {
     } else {
       setMenuState("");
     }
-
-    if (menuState !== "login" && menuState !== "signup") {
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          showChat ? null : setShowChat(true);
-          document.getElementById("chat_input")?.focus();
-        }
-      });
-    }
-    return () => {
-      window.removeEventListener("keydown", () => { document.getElementById("chat_input")?.focus(); });
-    };
-
   }, [])
 
   return menuState === "login" ? (
@@ -69,28 +54,11 @@ export default function Game() {
 
       {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
       {menuState === "32" && (<Key_Bind setMenuState = {setMenuState} menuState = {menuState}/>)}
-        {showChat && 
-        <AnimatePresence>
-        {showChat && (
-          <motion.div
-            key="chatbox"
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.20 }}
-          >
-            <ChatBox setShowChat={setShowChat} />
-          </motion.div>
-        )}
-      </AnimatePresence>}
-        {!showChat && <button className="flex gap-2 absolute right-0 bottom-16 p-5 bg-black/30 rounded-lg" onClick={() => setShowChat(true)}>
-          <div>Chat</div>
-          <MessageCircleMore />
-        </button>}
-        <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
-          <div>Friends</div>
-          <UserRoundPlus />
-        </button>
+      <ChatBox />
+      <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
+        <div>Friends</div>
+        <UserRoundPlus />
+      </button>
     </div>
   ) : (
     <div className="w-screen h-screen flex justify-center items-center">

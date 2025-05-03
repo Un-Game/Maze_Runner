@@ -9,7 +9,7 @@ const KB_button_l = () => {
     const value = e.target.value;
 
     if (/^[a-zA-Z]$/.test(value)) {
-      updateKeybind("left", value);
+      updateKeybind("left", value.toUpperCase());
     } else if (value === "") {
       updateKeybind("left", "");
     }

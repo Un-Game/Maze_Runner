@@ -8,8 +8,9 @@ const KB_button = () => {
   const handleKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
+    // Allow only letters, and store them in uppercase
     if (/^[a-zA-Z]$/.test(value)) {
-      updateKeybind("right", value);
+      updateKeybind("right", value.toUpperCase());
     } else if (value === "") {
       updateKeybind("right", "");
     }

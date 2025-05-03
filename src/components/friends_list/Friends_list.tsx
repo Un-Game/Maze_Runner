@@ -182,7 +182,7 @@ export default function Friend_list(props: props) {
                         </Dialog>
                     </div>
                     <div className="flex flex-col gap-[10px] w-full h-full">
-                        {user.friends?.length > 0 ? user.friends.map((friend, index) => (
+                        {user.friends.length > 0 ? user.friends.map((friend, index) => (
                             <div key={index} className="flex justify-between items-center">
                                 <Popover>
                                     <PopoverTrigger asChild onClick={()=>fetchUser(friend._id)}>

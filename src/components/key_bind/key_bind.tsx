@@ -1,5 +1,4 @@
 import BackButton from "../_components/back_button";
-import Save_button from "./_components_/save_button";
 import KB_button from "./_components_/key_bind_button_up";
 import KB_button_d from "./_components_/key_bind_button_down";
 import KB_button_l from "./_components_/key_bind_button_left";
@@ -7,42 +6,12 @@ import KB_button_r from "./_components_/key_bind_button_right";
 import KBBS1 from "./_components_/KBBS1";
 import KBBS2 from "./_components_/KBBS2";
 import KBBS3 from "./_components_/KBBS3";
-import { useKeyBind } from "@/context/KeybindContext";
-import { useUser } from "@/context/UserProvider";
-import axios from "axios";
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
   menuState: string;
 };
 export default function Key_Bind(props: props) {
-  const { user, updateUser } = useUser()
-  const { keybinds } = useKeyBind();
   const { setMenuState, menuState } = props;
-
-  const handleSaveWithId = async (_id: string) => {
-    const data = {
-      up: keybinds.up,
-      down: keybinds.down,
-      left: keybinds.left,
-      right: keybinds.right,
-      skill1: keybinds.skillOne,
-      skill2: keybinds.skillTwo,
-      skill3: keybinds.skillThree,
-    };
-
-    try {
-      const response = await axios.put(`http://localhost:999/user/${user._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-    } catch (error) {
-      console.error("Error saving keybinds", error);
-    }
-  };
-
   return (
     <div className="w-full h-[calc(100vh-100px)] overflow-scroll">
       <BackButton setMenuState={setMenuState} menuState={menuState} />
@@ -62,8 +31,6 @@ export default function Key_Bind(props: props) {
         <KBBS1 />
         <KBBS2 />
         <KBBS3 />
-        <Save_button onClick={() => handleSaveWithId(user._id)} />
-
       </div>
     </div>
   );

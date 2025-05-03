@@ -16,6 +16,7 @@ import { useUser } from "@/context/UserProvider";
 import { UserRoundPlus } from "lucide-react";
 import Friend_list from "@/components/friends_list/Friends_list";
 import Key_Bind from "@/components/key_bind/key_bind";
+import CustomGame from "@/components/custom_game/friendly_match";
 
 export default function Game() {
 
@@ -48,6 +49,8 @@ export default function Game() {
       {menuState === "1" && (<Multiplayer setMenuState={setMenuState} menuState={menuState} />)}
       {menuState === "2" && (<Solo setMenuState={setMenuState} menuState={menuState} />)}
       {menuState === "3" && (<Settings setMenuState={setMenuState} menuState={menuState} />)}
+
+      {menuState === "11" && (<CustomGame setMenuState={setMenuState} menuState={menuState}/>)}
 
       {menuState === "21" && (<GameAreaPracticeMatter setMenuState={setMenuState} menuState={menuState} />)}
       {menuState === "22" && (<GameAreaTest setMenuState={setMenuState} menuState={menuState} />)}

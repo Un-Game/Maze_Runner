@@ -18,7 +18,8 @@ export default function ChatBox(props) {
   const user = useUser();
 
   useEffect(() => {
-    socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
+    // socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
+    socketRef.current = io("http://localhost:999",{
       withCredentials: true
     });
     socketRef.current.emit("identify", user._id);

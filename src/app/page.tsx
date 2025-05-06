@@ -17,6 +17,7 @@ import { UserRoundPlus } from "lucide-react";
 import Friend_list from "@/components/friends_list/Friends_list";
 import Key_Bind from "@/components/key_bind/key_bind";
 import CustomGame from "@/components/custom_game/friendly_match";
+import Edit_Profile from "@/components/profile/edit_profile";
 
 export default function Game() {
 
@@ -57,6 +58,7 @@ export default function Game() {
 
       {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
       {menuState === "32" && (<Key_Bind setMenuState = {setMenuState} menuState = {menuState}/>)}
+      {menuState === "33" && (<Edit_Profile setMenuState = {setMenuState} menuState = {menuState}/>)}
       <ChatBox />
       <button className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg" onClick={() => setFriendMenu(true)}>
         <div>Friends</div>

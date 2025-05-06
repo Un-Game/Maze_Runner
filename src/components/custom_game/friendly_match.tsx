@@ -115,7 +115,7 @@ export default function CustomGame(props) {
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select game mode" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="bg-[#0e0d0e]">
                                                 <SelectItem value="custom">Custom</SelectItem>
                                                 <SelectItem value="ranked">Ranked</SelectItem>
                                                 <SelectItem value="unranked">Unranked</SelectItem>

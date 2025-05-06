@@ -10,8 +10,8 @@ export const getLobby = async () => {
     return data
 }
 
-export const createLobby = async (players: string[], map: string, status: string, game_mode: string) => {
-    const body = { players, map, status, game_mode };
+export const createLobby = async (players: string[], map: string, status: string, game_mode: string, isPrivate: boolean) => {
+    const body = { players, map, status, game_mode, isPrivate };
     const { data } = await instance.post(`/lobby`, body);
     return data
 }

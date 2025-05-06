@@ -252,6 +252,8 @@ export default function GameAreaPracticeMatter(props:props) {
     
     const updateCallback = () => {
       
+
+      
       const playerBody = playerBodyRef.current;
       const player2Body = player2BodyRef.current;
       if (!playerBody || !player2Body) return;
@@ -304,7 +306,7 @@ export default function GameAreaPracticeMatter(props:props) {
       }
 
       if( keysPressed.current[keybinds.skillThree] && !playerSetting.skills.skill3.isInCooldown) {
-        playerSetting.skills.skill3.isInCooldown = true;
+        playerSetting.skills.skill3.isInCooldown = true
         Matter.Body.set(playerBody, {isSensor: true});
         setTimeout(() => {
           playerSetting.skills.skill3.isInCooldown = false;
@@ -371,6 +373,7 @@ export default function GameAreaPracticeMatter(props:props) {
 
 
     };
+    
   }, [handleKeyDown, handleKeyUp]);
 
 

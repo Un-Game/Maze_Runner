@@ -1,6 +1,12 @@
 "use client";
 import { useUser } from "./UserProvider";
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 
 type Keybinds = {
   up: string;
@@ -39,11 +45,7 @@ export const useKeyBind = () => {
   return context;
 };
 
-export const KeyBindProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
   const [keybinds, setKeybinds] = useState<Keybinds>(defaultKeybinds);
   const user = useUser();
 
@@ -54,20 +56,38 @@ export const KeyBindProvider = ({
     }));
   };
 
+  useEffect(() => {
+    const fetchKeybinds = async () => {
+      const currentUserId = user._id;
+      try {
+        const res = await fetch(`http://localhost:999/user/${currentUserId}`);
+        if (!res.ok) throw new Error("Failed to fetch keybinds");
+        const data = await res.json();
+
+        if (data.control) {
+          setKeybinds(data.control);
+        }
+      } catch (err) {
+        console.error("Failed to load keybinds", err);
+      }
+    };
+
+    if (user?._id) {
+      fetchKeybinds();
+    }
+  }, [user]);
+
   const saveKeybinds = async () => {
-    const currentUserId = user._id
+    const currentUserId = user._id;
 
     try {
-      const res = await fetch(
-        `https://maze-runner-backend-1.onrender.com/user/${currentUserId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ keybinds }),
-        }
-      );
+      const res = await fetch(`http://localhost:999/user/${currentUserId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ control: keybinds }),
+      });
       if (!res.ok) throw new Error("Failed to save keybinds");
       alert("Keybinds saved successfully!");
     } catch (err) {

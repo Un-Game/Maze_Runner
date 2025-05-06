@@ -21,13 +21,8 @@ export default function Game() {
   const [menuState, setMenuState] = useState("");
   const [friendMenu, setFriendMenu] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [tick, setTick] = useState(0);
 
   const user = useUser();
-
-  const forceReload = () => {
-    setTick((prev) => prev + 1);
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");

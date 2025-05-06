@@ -16,11 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className={`${poetsenOne.className}`}>
-        <KeyBindProvider userId={""}>
-          <UserProvider>
+        <UserProvider>
+          <KeyBindProvider>
             <ThemeProvider>{children}</ThemeProvider>
-          </UserProvider>
-        </KeyBindProvider>
+          </KeyBindProvider>
+        </UserProvider>
       </body>
     </html>
   );

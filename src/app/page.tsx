@@ -15,6 +15,7 @@ import { UserRoundPlus } from "lucide-react";
 import Friend_list from "@/components/friends_list/Friends_list";
 import Key_Bind from "@/components/key_bind/key_bind";
 import CustomGame from "@/components/custom_game/friendly_match";
+import Edit_Profile from "@/components/profile/edit_profile";
 import ChatBox from "@/components/chat_system/ChatBox";
 
 export default function Game() {
@@ -57,34 +58,20 @@ export default function Game() {
         className="w-full h-full absolute object-cover z-[-1] opacity-20"
       />
       <Header setMenuState={setMenuState} />
-      {menuState === "" && <MainMenu setMenuState={setMenuState} />}
-      {menuState === "1" && (
-        <Multiplayer setMenuState={setMenuState} menuState={menuState} />
-      )}
-      {menuState === "2" && (
-        <Solo setMenuState={setMenuState} menuState={menuState} />
-      )}
-      {menuState === "3" && (
-        <Settings setMenuState={setMenuState} menuState={menuState} />
-      )}
-      {menuState === "11" && (
-        <CustomGame setMenuState={setMenuState} menuState={menuState} />
-      )}
-      {menuState === "21" && (
-        <GameAreaPracticeMatter
-          setMenuState={setMenuState}
-          menuState={menuState}
-        />
-      )}
-      {menuState === "22" && (
-        <GameAreaTest setMenuState={setMenuState} menuState={menuState} />
-      )}
-      {menuState === "31" && (
-        <MapMaker setMenuState={setMenuState} menuState={menuState} />
-      )}
-      {menuState === "32" && (
-        <Key_Bind setMenuState={setMenuState} menuState={menuState} />
-      )}
+      {menuState === "" && (<MainMenu setMenuState={setMenuState} />)}
+
+      {menuState === "1" && (<Multiplayer setMenuState={setMenuState} menuState={menuState} />)}
+      {menuState === "2" && (<Solo setMenuState={setMenuState} menuState={menuState} />)}
+      {menuState === "3" && (<Settings setMenuState={setMenuState} menuState={menuState} />)}
+
+      {menuState === "11" && (<CustomGame setMenuState={setMenuState} menuState={menuState}/>)}
+
+      {menuState === "21" && (<GameAreaPracticeMatter setMenuState={setMenuState} menuState={menuState} />)}
+      {menuState === "22" && (<GameAreaTest setMenuState={setMenuState} menuState={menuState} />)}
+
+      {menuState === "31" && (<MapMaker setMenuState = {setMenuState} menuState = {menuState}/>)}
+      {menuState === "32" && (<Key_Bind setMenuState = {setMenuState} menuState = {menuState}/>)}
+      {menuState === "33" && (<Edit_Profile setMenuState = {setMenuState} menuState = {menuState}/>)}
       <ChatBox />
       <button
         className="flex gap-2 absolute right-0 bottom-0 p-5 bg-black/30 rounded-lg"

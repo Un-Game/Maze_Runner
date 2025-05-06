@@ -3,7 +3,6 @@
 import { useUser } from "@/context/UserProvider";
 import BackButton from "../_components/back_button";
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -25,17 +24,20 @@ import {
 import { getMap } from "@/utils/mapRequest";
 import { useFormik } from "formik";
 import { createLobby } from "@/utils/lobbyRequest";
+import axios from "axios";
+import { RefreshCcw } from "lucide-react";
 
 export default function CustomGame(props) {
     const { setMenuState, menuState } = props;
     const [maps, setMaps] = useState([]);
+    const [lobbies, setLobbies] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const socketLobby = useRef(null);
+    const [searchValue, setSearchValue] = useState('');
     const user = useUser();
 
     const handleSubmit = async (values) => {
         try {
-            await createLobby(values.players, values.map, values.status, values.game_mode);
+            await createLobby(values.players, values.map, values.status, values.game_mode, values.isPrivate);
             setDialogOpen(false);
         } catch (error) {
             console.error("Failed to create lobby:", error);
@@ -47,13 +49,23 @@ export default function CustomGame(props) {
             players: [user._id],
             map: "",
             game_mode: "",
-            status: "starting"
+            status: "starting",
+            isPrivate: false
         },
         onSubmit: async (values) => {
             console.log("Creating lobby with:", values);
             await handleSubmit(values);
         },
     });
+
+    const fetchLobby = async () => {
+        try {
+            const data = await axios.get("http://localhost:999/lobby");
+            setLobbies(data.data);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     useEffect(() => {
         const fetchMap = async () => {
@@ -64,13 +76,23 @@ export default function CustomGame(props) {
                 console.error("Failed to fetch maps", error);
             }
         };
+
+
+
+        fetchLobby();
         fetchMap();
     }, []);
+
+    const joinLobby = (code) => {
+        console.log(code);
+        
+    }
+    
 
     return (
         <div>
             <BackButton setMenuState={setMenuState} menuState={menuState} />
-            <div className="w-full h-[calc(100vh-100px)] flex flex-col items-center">
+            <div className="w-full h-[calc(100vh-100px)] flex flex-col items-center gap-[50px]">
                 <div className="flex gap-[50px] h-fit mt-[50px]">
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
@@ -78,11 +100,11 @@ export default function CustomGame(props) {
                                 Create Lobby
                             </button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[425px] bg-black/50">
                             <DialogHeader>
-                                <DialogTitle>Create Lobby</DialogTitle>
+                                <DialogTitle className="text-[25px]">Create Lobby</DialogTitle>
                                 <DialogDescription>
-                                    Fill in the lobby settings and click create.
+                                    {/* Fill in the lobby settings and click create. */}
                                 </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={formik.handleSubmit}>
@@ -115,12 +137,16 @@ export default function CustomGame(props) {
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select game mode" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="bg-black">
                                                 <SelectItem value="custom">Custom</SelectItem>
                                                 <SelectItem value="ranked">Ranked</SelectItem>
                                                 <SelectItem value="unranked">Unranked</SelectItem>
                                             </SelectContent>
                                         </Select>
+                                    </div>
+                                    <div className="flex">
+                                        <div className="w-[100px]">Private</div>
+                                        <input type="checkbox" checked={formik.values.isPrivate}  onChange={()=>formik.setFieldValue("isPrivate", !formik.values.isPrivate)}/>
                                     </div>
                                 </div>
                                 <DialogFooter>
@@ -136,9 +162,38 @@ export default function CustomGame(props) {
                             type="text"
                             className="border outline-none rounded-[5px] w-[300px] text-[20px] px-[15px]"
                             placeholder="Join existing lobby"
+                            value={searchValue}
+                            onChange={(e)=>setSearchValue(e.target.value)}
+                            onKeyDown={(e)=>{e.code === "Enter" && joinLobby(searchValue)}}
                         />
-                        <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700">Join lobby</button>
+                        <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700" onClick={()=>joinLobby(searchValue)}>Join lobby</button>
                     </div>
+                </div>
+                <div className="flex flex-col w-[800px] h-fit overflow-y-scroll gap-[20px] p-[25px]">
+                    <button className="absolute w-fit flex h-[30px] ml-[-140px] gap-[5px] items-center rounded-[5px] bg-cyan-100/30 px-[10px]" onClick={()=>fetchLobby()}>
+                        <div>Refresh</div>
+                        <RefreshCcw className="w-[23px] h-[23px]"/>
+                    </button>
+                    {lobbies.length === 0 ? <div className="w-full text-[30px] h-[300px] flex items-center justify-center">
+                        No public lobby to show here
+                    </div> : 
+                    lobbies.map((el, ind)=>(
+                        <button key={ind} className="w-[750px] h-[80px] rounded-[10px] bg-gray-400/20 flex px-[30px] items-center justify-between hover:scale-103 transition duration-100" onClick={()=>joinLobby(el.joinCode)}>
+                            <div className="flex gap-[20px]">
+                                <div className="text-cyan-400 text-[20px]">Map:</div>
+                                <div className="text-[20px]">{el.map.name}</div>
+                            </div>
+                            <div className="flex gap-[20px]">
+                                <div className="text-cyan-400 text-[20px]">Player count:</div>
+                                <div className="text-[20px]">{el.players.length}/2</div>
+                            </div>
+                            <div className="flex gap-[20px]">
+                                <div className="text-cyan-400 text-[20px]">Host:</div>
+                                <div className="text-[20px]">{el.players[0].username}</div>
+                            </div>
+                        </button>
+                    ))
+                    }
                 </div>
             </div>
         </div>

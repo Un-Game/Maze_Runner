@@ -42,7 +42,7 @@ const Login = (props: props) => {
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
         setMenuState("");
-        window.location.reload(); 
+        window.location.reload()
       }
     } catch (error) {
       console.log(error);

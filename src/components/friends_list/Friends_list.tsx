@@ -92,7 +92,7 @@ export default function Friend_list(props: props) {
 
     const acceptRequest = async(id) => {
         try{
-            const resp = await axios.delete("https://maze-runner-backend-1.onrender.com/request/accept",{
+            const resp = await axios.delete("http://localhost:999/request/accept",{
                 data: {
                     senderId: id,
                     receiverId: user._id

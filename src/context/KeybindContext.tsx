@@ -1,4 +1,5 @@
 "use client";
+import { useUser } from "./UserProvider";
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
 type Keybinds = {
@@ -6,14 +7,25 @@ type Keybinds = {
   down: string;
   left: string;
   right: string;
-  skillOne: string;
-  skillTwo: string;
-  skillThree: string;
+  skill1: string;
+  skill2: string;
+  skill3: string;
+};
+
+const defaultKeybinds: Keybinds = {
+  up: "w",
+  down: "s",
+  left: "a",
+  right: "d",
+  skill1: "c",
+  skill2: "f",
+  skill3: "t",
 };
 
 type KeyBindContextType = {
   keybinds: Keybinds;
   updateKeybind: (key: keyof Keybinds, value: string) => void;
+  saveKeybinds: () => Promise<void>;
 };
 
 const Key_Bind_Context = createContext<KeyBindContextType | undefined>(
@@ -27,16 +39,13 @@ export const useKeyBind = () => {
   return context;
 };
 
-export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
-  const [keybinds, setKeybinds] = useState<Keybinds>({
-    up: "w",
-    down: "s",
-    left: "a",
-    right: "d",
-    skillOne: "c",
-    skillTwo: "f",
-    skillThree: "t",
-  });
+export const KeyBindProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [keybinds, setKeybinds] = useState<Keybinds>(defaultKeybinds);
+  const user = useUser();
 
   const updateKeybind = (key: keyof Keybinds, value: string) => {
     setKeybinds((prev) => ({
@@ -45,8 +54,32 @@ export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const saveKeybinds = async () => {
+    const currentUserId = user._id
+
+    try {
+      const res = await fetch(
+        `https://maze-runner-backend-1.onrender.com/user/${currentUserId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ keybinds }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed to save keybinds");
+      alert("Keybinds saved successfully!");
+    } catch (err) {
+      console.error("Save failed", err);
+      alert("Failed to save keybinds");
+    }
+  };
+
   return (
-    <Key_Bind_Context.Provider value={{ keybinds, updateKeybind }}>
+    <Key_Bind_Context.Provider
+      value={{ keybinds, updateKeybind, saveKeybinds }}
+    >
       {children}
     </Key_Bind_Context.Provider>
   );

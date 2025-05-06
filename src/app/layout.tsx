@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className={`${poetsenOne.className}`}>
-        <KeyBindProvider>
+        <KeyBindProvider userId={""}>
           <UserProvider>
             <ThemeProvider>{children}</ThemeProvider>
           </UserProvider>

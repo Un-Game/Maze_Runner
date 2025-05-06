@@ -2,15 +2,14 @@
 import { useKeyBind } from "@/context/KeybindContext";
 import { useEffect } from "react";
 
-const KB_button = () => {
+const KB_button_r = () => {
   const { keybinds, updateKeybind } = useKeyBind();
 
   const handleKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
-    // Allow only letters, and store them in uppercase
     if (/^[a-zA-Z]$/.test(value)) {
-      updateKeybind("right", value.toUpperCase());
+      updateKeybind("right", value);
     } else if (value === "") {
       updateKeybind("right", "");
     }
@@ -53,4 +52,4 @@ const KB_button = () => {
   );
 };
 
-export default KB_button;
+export default KB_button_r;

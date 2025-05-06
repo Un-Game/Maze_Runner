@@ -1,15 +1,17 @@
 import BackButton from "../_components/back_button";
-import KB_button from "./_components_/key_bind_button_up";
-import KB_button_d from "./_components_/key_bind_button_down";
-import KB_button_l from "./_components_/key_bind_button_left";
-import KB_button_r from "./_components_/key_bind_button_right";
-import KBBS1 from "./_components_/KBBS1";
-import KBBS2 from "./_components_/KBBS2";
-import KBBS3 from "./_components_/KBBS3";
+import KB_button from "../_components/key_bind/key_bind_button_up";
+import KB_button_l from "../_components/key_bind/key_bind_button_left";
+import KB_button_d from "../_components/key_bind/key_bind_button_down";
+import KB_button_r from "../_components/key_bind/key_bind_button_right";
+import KBBS1 from "../_components/key_bind/KBBS1";
+import KBBS2 from "../_components/key_bind/KBBS2";
+import KBBS3 from "../_components/key_bind/KBBS3";
+import Save_button from "../_components/key_bind/save_button";
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
   menuState: string;
 };
+
 export default function Key_Bind(props: props) {
   const { setMenuState, menuState } = props;
   return (
@@ -31,6 +33,7 @@ export default function Key_Bind(props: props) {
         <KBBS1 />
         <KBBS2 />
         <KBBS3 />
+        <Save_button />
       </div>
     </div>
   );

@@ -266,7 +266,7 @@ export default function GameAreaPracticeMatter(props:props) {
       if (keysPressed.current[keybinds.left]) forceX -= config.moveForce;
       if (keysPressed.current[keybinds.right]) forceX += config.moveForce;
 
-      if (keysPressed.current[keybinds.skillOne] && !playerSetting.skills.skill1.isInCooldown) {
+      if (keysPressed.current[keybinds.skill1] && !playerSetting.skills.skill1.isInCooldown) {
         playerSetting.skills.skill1.isInCooldown = true;
         config.maxSpeed = 7.5;
 
@@ -279,7 +279,7 @@ export default function GameAreaPracticeMatter(props:props) {
         }, playerSetting.skills.skill1.cooldown);
       };
 
-      if( keysPressed.current[keybinds.skillTwo] && !playerSetting.skills.skill2.isInCooldown) {
+      if( keysPressed.current[keybinds.skill2] && !playerSetting.skills.skill2.isInCooldown) {
 
         if( playerSetting.skills.skill2.usedState) {
 
@@ -303,7 +303,7 @@ export default function GameAreaPracticeMatter(props:props) {
         }
       }
 
-      if( keysPressed.current[keybinds.skillThree] && !playerSetting.skills.skill3.isInCooldown) {
+      if( keysPressed.current[keybinds.skill3] && !playerSetting.skills.skill3.isInCooldown) {
         playerSetting.skills.skill3.isInCooldown = true;
         Matter.Body.set(playerBody, {isSensor: true});
         setTimeout(() => {

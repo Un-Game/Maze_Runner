@@ -92,7 +92,7 @@ export const AddAvatar = () => {
 
   return (
 
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center" >
       <div className="relative w-50 h-50">
         <img
           src={prevImg || formik.values.avatar || "/default-avatar.png"}
@@ -107,7 +107,7 @@ export const AddAvatar = () => {
         />
       </div>
       <button type="submit"
-        className="bg-black w-[180px] h-[80px] flex justify-center items-center rounded-[20px] border-2 border-cyan-400 shadow-[0_0_20px_#00ffff] hover:scale-105 hover:shadow-[0_0_40px_#00ffff] transition-transform duration-300 m-[30px] absolute"
+        className="bg-black w-[180px] h-[80px] flex justify-center items-center rounded-[20px] border-2 border-cyan-400 shadow-[0_0_20px_#00ffff] hover:scale-105 hover:shadow-[0_0_40px_#00ffff] transition-transform duration-300 m-[30px] "
       >
         <span className="text-[24px] bg-gradient-to-b from-blue-800 via-blue-500 to-white bg-clip-text text-transparent whitespace-nowrap">
           Save Avatar

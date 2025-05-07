@@ -26,6 +26,9 @@ import { useFormik } from "formik";
 import { createLobby } from "@/utils/lobbyRequest";
 import axios from "axios";
 import { RefreshCcw } from "lucide-react";
+import { useSocket } from "@/context/SocketContext";
+import Lobby from "./lobbies/preparing";
+import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
 
 export default function CustomGame(props) {
@@ -34,12 +37,24 @@ export default function CustomGame(props) {
     const [lobbies, setLobbies] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const [userStatus, setUserStatus] = useState("menu");
+    const [lobbyInfo, setLobbyInfo] = useState(null);
     const user = useUser();
+    const socket = useSocket();
+
+    useEffect(()=>{
+        if(!socket) return;
+
+        // socket.on("lobby:join",)
+
+    },[socket])
 
     const handleSubmit = async (values) => {
         try {
-            await createLobby(values.players, values.map, values.status, values.game_mode, values.isPrivate, values.name);
-            setDialogOpen(false);
+            const response = await createLobby(values.players, values.map, values.status, values.game_mode, values.isPrivate, values.name);
+            console.log(response);
+            setLobbyInfo(response.lobby);
+            setUserStatus("lobby");
         } catch (error) {
             console.error("Failed to create lobby:", error);
         }
@@ -78,21 +93,31 @@ export default function CustomGame(props) {
                 console.error("Failed to fetch maps", error);
             }
         };
-
-
-
         fetchLobby();
         fetchMap();
     }, []);
 
-    const joinLobby = (code) => {
-        console.log(code);
-
+    const joinLobby = async(code) => {
+        try{
+            const response = await axios.get(`http://localhost:999/lobby/${code}`);
+            console.log(response);
+            
+            if(response.data === "Not found"){
+                toast.error("Lobby not found");
+            }else{
+                setLobbyInfo(response.data);
+                setUserStatus("lobby");
+            }
+        } catch(err){
+            console.log(err);
+        }
+        
     }
+    
 
-
-    return (
+    return userStatus === "menu" ? (
         <div>
+            <ToastContainer theme="dark" position="top-center" autoClose={1000} hideProgressBar/>
             <BackButton setMenuState={setMenuState} menuState={menuState} />
             <div className="w-full h-[calc(100vh-100px)] flex flex-col items-center gap-[50px]">
                 <div className="flex gap-[50px] h-fit mt-[50px]">
@@ -211,5 +236,5 @@ export default function CustomGame(props) {
                 </div>
             </div>
         </div>
-    );
+    ) : userStatus === "lobby" ? <Lobby lobbyInfo={lobbyInfo} setUserStatus={setUserStatus}/> : <div></div>
 }

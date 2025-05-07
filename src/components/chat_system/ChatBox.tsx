@@ -1,8 +1,8 @@
 import { useUser } from "@/context/UserProvider";
 import { MessageCircleMore, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import { motion } from "framer-motion";
+import { useSocket } from "@/context/SocketContext";
 
 export default function ChatBox(props) {
 
@@ -12,24 +12,25 @@ export default function ChatBox(props) {
   const [activeTab, setActiveTab] = useState("global");
   const [activeUser, setActiveUser] = useState(null);
   const [showChat, setShowChat] = useState(false);
-  const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const socket = useSocket();
 
   const user = useUser();
 
   useEffect(() => {
-    // socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
-    socketRef.current = io("http://localhost:999",{
-      withCredentials: true
-    });
-    socketRef.current.emit("identify", user._id);
+    // // socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
+    // socketRef.current = io("http://localhost:999",{
+    //   withCredentials: true
+    // });
 
-    socketRef.current.on("chat:message", (message) => {
-      console.log(message);
+
+    if(!socket) return;
+
+    socket.on("chat:message", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    socketRef.current.on("chat:dm", (dm) => {
+    socket.on("chat:dm", (dm) => {
       console.log(dm);
 
       setDms((prevDmsObj) => {
@@ -47,10 +48,10 @@ export default function ChatBox(props) {
         return newDmsObj;
       });
     });
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, []);
+    // return () => {
+    //   socketRef.current.disconnect();
+    // };
+  }, [socket]);
   
 
 
@@ -62,11 +63,11 @@ export default function ChatBox(props) {
   }, [dms, activeUser, showChat]);
 
   const handleSendMessage = () => {
-    if (socketRef.current && input.trim() !== "") {
+    if (socket && input.trim() !== "") {
       if (activeTab === "global") {
-        socketRef.current.emit("chat:message", { text: input, sender: user.username, channel: activeTab });
+        socket.emit("chat:message", { text: input, sender: user.username, channel: "global" });
       } else {
-        socketRef.current.emit("chat:dm", { text: input, sender: user.username, to: activeUser[0] })
+        socket.emit("chat:dm", { text: input, sender: user.username, to: activeUser[0] })
       }
       setInput("");
     }

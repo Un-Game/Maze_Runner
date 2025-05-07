@@ -12,7 +12,7 @@ export default function Edit_Profile(props: props) {
     return (
         <div className="w-full h-[calc(100vh-100px)] overflow-scroll">
             <BackButton setMenuState={setMenuState} menuState={menuState} />
-            <div className="flex flex-col items-center justify-center mt-10 gap-30">
+            <div className="flex flex-col items-center justify-center mt-10 gap-10">
                 <AddAvatar />
                 <ChangePassword/>
             </div>

@@ -4,7 +4,9 @@ export default function Lobby(props) {
 
     const { lobbyInfo, setUserStatus } = props;
 
-    console.log(lobbyInfo);
+    const leave = () => {
+        setUserStatus("menu");
+    }
 
 
     return (
@@ -40,8 +42,8 @@ export default function Lobby(props) {
                 </div>
             </div>
             <div className="flex text-[20px] gap-[50px]">
-                <button className="border w-[300px] bg-red-500/60 rounded-[20px] text-[35px]" onClick={()=>setUserStatus("menu")}>Leave</button>
-                <button className="border w-[300px] bg-cyan-500/60 rounded-[20px] text-[35px]">Start</button>
+                <button className="w-[300px] bg-red-500/80 rounded-[10px] text-[35px]" onClick={()=>leave()}>Leave</button>
+                <button className="w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px]">Start</button>
             </div>
         </div>
     )

@@ -208,8 +208,8 @@ export default function CustomGame(props) {
                         <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700" onClick={() => joinLobby(searchValue)}>Join lobby</button>
                     </div>
                 </div>
-                <div className="flex flex-col w-[800px] h-fit overflow-y-scroll gap-[20px] p-[25px]">
-                    <button className="absolute w-fit flex h-[30px] ml-[-140px] gap-[5px] items-center rounded-[5px] bg-cyan-100/30 px-[10px]" onClick={() => fetchLobby()}>
+                <div className="flex flex-col w-[800px] h-fit overflow-y-scroll gap-[20px] items-center mt-[20px] py-[10px]">
+                    <button className="absolute w-fit flex h-[30px] mt-[-40px] ml-[-640px] gap-[5px] items-center rounded-[5px] bg-cyan-100/30 px-[10px]" onClick={() => fetchLobby()}>
                         <div>Refresh</div>
                         <RefreshCcw className="w-[23px] h-[23px]" />
                     </button>

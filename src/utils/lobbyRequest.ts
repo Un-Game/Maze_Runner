@@ -10,13 +10,13 @@ export const getLobby = async () => {
     return data
 }
 
-export const createLobby = async (players: string[], map: string, status: string, game_mode: string, isPrivate: boolean) => {
-    const body = { players, map, status, game_mode, isPrivate };
+export const createLobby = async (players: string[], map: string, status: string, game_mode: string, isPrivate: boolean, name: string) => {
+    const body = { players, map, status, game_mode, isPrivate, name };
     const { data } = await instance.post(`/lobby`, body);
     return data
 }
 
-export const updateLobby = async (id: string, updates: { players?: string[]; status?: string; game_mode?: string; map?: string; }) => {
+export const updateLobby = async (id: string, updates: { players?: string[]; status?: string; game_mode?: string; map?: string; name?: string }) => {
     const { data } = await instance.put(`/lobby/${id}`, updates);
     return data;
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import BackButton from "../_components/back_button";
-import { getKeyBindings } from "../_components/key_binding";
 import { useKeyBind } from "@/context/KeybindContext";
+import { useUser } from "@/context/UserProvider";
 
 type props = {
   setMenuState: React.Dispatch<React.SetStateAction<string>>;
@@ -9,6 +9,8 @@ type props = {
 };
 
 export default function GameAreaTest(props: props) {
+  const user = useUser();
+  const currentUserId = user._id;
   const { keybinds } = useKeyBind();
   const { setMenuState, menuState } = props;
   const baseWidth = 900;
@@ -286,6 +288,21 @@ export default function GameAreaTest(props: props) {
       hitbox.y + hitbox.height > exitBox.y
     ) {
       setInputLocked(true);
+      const gainedExp = Math.floor(Math.random() * 6) + 1;
+      const newTotalExp = (user?.exp || 0) + gainedExp;
+      console.log("Gained:", gainedExp, "New Total:", newTotalExp);
+
+      if (gainedExp) {
+        fetch(`http://localhost:999/user/${currentUserId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ exp: newTotalExp }),
+        }).catch((err) => {
+          console.error("Failed to update EXP:", err);
+        });
+      }
       setTimeout(() => {
         setDifficulty((prev) => Math.min(prev + 0.3, 4));
         setInputLocked(false);
@@ -377,6 +394,8 @@ export default function GameAreaTest(props: props) {
                 setGameOver(false);
                 setDifficulty(1);
                 setTimer(10);
+                setPosition({ x: 0, y: 0 });
+                setVelocity({ x: 0, y: 0 });
               }}
             >
               Retry?

@@ -60,14 +60,7 @@ export const ChangePassword = () => {
         placeholder="Confirm new password"
       />
       {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
-      <button
-        type="submit"
-        className="bg-black w-[200px] h-[80px] flex justify-center items-center rounded-[20px] border-2 border-cyan-400 shadow-[0_0_20px_#00ffff] hover:scale-105 hover:shadow-[0_0_40px_#00ffff] transition-transform duration-300 m-[30px]"
-      >
-        <span className="text-[24px] bg-gradient-to-b from-blue-800 via-blue-500 to-white bg-clip-text text-transparent whitespace-nowrap">
-          Save Password
-        </span>
-      </button>
+      <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700" type="submit">Save password</button>
     </form>
   );
 };

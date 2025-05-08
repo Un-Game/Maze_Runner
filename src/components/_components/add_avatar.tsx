@@ -92,7 +92,7 @@ export const AddAvatar = () => {
 
   return (
 
-    <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center" >
+    <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center gap-5" >
       <div className="relative w-50 h-50">
         <img
           src={prevImg || formik.values.avatar || "/default-avatar.png"}
@@ -106,14 +106,7 @@ export const AddAvatar = () => {
           className="absolute inset-0 opacity-0 cursor-pointer rounded-full w-full h-full"
         />
       </div>
-      <button type="submit"
-        className="bg-black w-[180px] h-[80px] flex justify-center items-center rounded-[20px] border-2 border-cyan-400 shadow-[0_0_20px_#00ffff] hover:scale-105 hover:shadow-[0_0_40px_#00ffff] transition-transform duration-300 m-[30px] "
-      >
-        <span className="text-[24px] bg-gradient-to-b from-blue-800 via-blue-500 to-white bg-clip-text text-transparent whitespace-nowrap">
-          Save Avatar
-        </span>
-      </button>
-
+      <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700" type="submit">Save avatar</button>
     </form>
   )
 }

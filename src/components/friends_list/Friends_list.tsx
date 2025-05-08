@@ -169,8 +169,8 @@ export default function Friend_list(props: props) {
                                     ) : searchResult ? (
                                         <div className="w-full flex justify-between mt-[20px] text-[20px]">
                                             <div className="flex items-center gap-[10px]">
-                                                <div className="w-[30px] h-[30px]">
-                                                    <img src={searchResult.avatar ? searchResult.avatar : "./globe.svg"} className="w-full h-full object-cover"/>
+                                                <div className="w-[40px] h-[40px]">
+                                                    <img src={searchResult.avatar ? searchResult.avatar : "./globe.svg"} className="w-full h-full object-cover rounded-full"/>
                                                 </div>
                                                 <div>{searchResult.username}</div>
                                             </div>
@@ -187,8 +187,8 @@ export default function Friend_list(props: props) {
                                 <Popover>
                                     <PopoverTrigger asChild onClick={()=>fetchUser(friend._id)}>
                                         <div className="flex gap-[15px] w-full cursor-pointer">
-                                            <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-                                                <img src={friend.avatar ? friend.avatar : "./globe.svg"}/>
+                                            <div className="min-w-[40px] h-[40px] rounded-full justify-center items-center">
+                                                <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-[40px] h-[40px] object-cover rounded-full"/>
                                             </div>
                                             <div className="text-[20px] w-full truncate">{friend.username}</div>
                                         </div>
@@ -199,8 +199,8 @@ export default function Friend_list(props: props) {
                                         ) : viewFriend ? (
                                             <div className="flex flex-col gap-[15px]">
                                                 <div className="flex gap-[15px] items-center">
-                                                    <img src={viewFriend.avatar ? viewFriend.avatar : "./globe.svg"} className="w-[30px] h-[30px]"/>
-                                                    <div className="w-[140px] truncate">{viewFriend.username}</div>
+                                                    <img src={viewFriend.avatar ? viewFriend.avatar : "./globe.svg"} className="w-[30px] h-[30px] rounded-full"/>
+                                                    <div className="w-[140px] break-words">{viewFriend.username}</div>
                                                     <button className="bg-white/20 p-[5px] rounded-[5px] align-end">
                                                         <MessageSquare />
                                                     </button>
@@ -238,9 +238,9 @@ export default function Friend_list(props: props) {
                                         <div key={index} className="w-full flex justify-between p-[10px]">
                                             <div className="flex gap-[15px]">
                                                 <div className="w-[30px] h-[30px]">
-                                                    <img src={req.senderAvatar ? req.senderAvatar : "./globe.svg"} className="w-full h-full object-cover" />
+                                                    <img src={req.senderAvatar ? req.senderAvatar : "./globe.svg"} className="w-full h-full object-cover rounded-full" />
                                                 </div>
-                                                <div>{req.senderUsername}</div>
+                                                <div className="break-words">{req.senderUsername}</div>
                                             </div>
                                             <div className="flex gap-[20px]">
                                                 <button className="w-[25px] h-[25px] bg-cyan-400 rounded-[5px]" onClick={()=>acceptRequest(req.senderId)}><Check/></button>

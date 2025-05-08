@@ -54,6 +54,7 @@ export default function CustomGame(props) {
             const response = await createLobby(values.players, values.map, values.status, values.game_mode, values.isPrivate, values.name);
             console.log(response);
             setLobbyInfo(response.lobby);
+            // socket.emit("lobby:join",{room: response.lobby.});
             setUserStatus("lobby");
         } catch (error) {
             console.error("Failed to create lobby:", error);
@@ -113,6 +114,8 @@ export default function CustomGame(props) {
         }
         
     }
+    
+    console.log(lobbies);
     
 
     return userStatus === "menu" ? (
@@ -218,17 +221,17 @@ export default function CustomGame(props) {
                     </div> :
                         lobbies.map((el, ind) => (
                             <button key={ind} className="w-[750px] h-[80px] rounded-[10px] bg-gray-400/20 flex px-[30px] items-center justify-between hover:scale-103 transition duration-100" onClick={() => joinLobby(el.joinCode)}>
-                                <div className="flex gap-[20px]">
+                                <div className="flex gap-[20px] w-[300px]">
+                                    <div className="text-cyan-400 text-[20px] text-nowrap">Lobby name:</div>
+                                    <div className="text-[20px] truncate">{el.name}</div>
+                                </div>
+                                <div className="flex gap-[20px] w-[200px]">
                                     <div className="text-cyan-400 text-[20px]">Map:</div>
-                                    <div className="text-[20px]">{el.map.name}</div>
+                                    <div className="text-[20px] truncate">{el.map.name}</div>
                                 </div>
-                                <div className="flex gap-[20px]">
-                                    <div className="text-cyan-400 text-[20px]">Player count:</div>
-                                    <div className="text-[20px]">{el.players.length}/2</div>
-                                </div>
-                                <div className="flex gap-[20px]">
+                                <div className="flex gap-[20px] w-[150px]">
                                     <div className="text-cyan-400 text-[20px]">Host:</div>
-                                    <div className="text-[20px]">{el.players[0].username}</div>
+                                    <div className="text-[20px] truncate">{el.players[0].username}</div>
                                 </div>
                             </button>
                         ))

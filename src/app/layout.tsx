@@ -5,7 +5,7 @@ import { KeyBindProvider } from "@/context/KeybindContext";
 import "./globals.css";
 import { SocketProvider } from "@/context/SocketContext";
 
-const poetsenOne = Poetsen_One({ weight: "400", subsets: ["latin"], display: 'swap' });
+const poetsenOne = Poetsen_One({ weight: "400", subsets: ["latin"] });
 
 export default function RootLayout({
   children,

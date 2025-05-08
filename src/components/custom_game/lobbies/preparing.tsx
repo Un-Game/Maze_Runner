@@ -1,38 +1,66 @@
+import { useSocket } from "@/context/SocketContext";
+import { useUser } from "@/context/UserProvider";
+import axios from "axios";
 import { PlusCircleIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Lobby(props) {
 
     const { lobbyInfo, setUserStatus } = props;
+    const [lobby, setLobby] = useState(lobbyInfo);
+    const user = useUser();
+    const socket = useSocket();
+
+    useEffect(()=>{
+        if(!socket)
+            return;
+
+        // if(lobbyInfo.players[0].username !== user.username)
+        socket.emit("lobby:join", {room: lobby.joinCode.toString()});
+
+        socket.on("lobby:update", async()=> {
+            const response = await axios.get(`http://localhost:999/lobby/${lobby.joinCode}`);
+            console.log(response.data);
+            setLobby(response.data);
+        })
+
+
+    },[socket])
+
 
     const leave = () => {
+        socket.emit("lobby:leave", {room: lobby.joinCode.toString()});
         setUserStatus("menu");
     }
 
+    console.log(lobby.joinCode.toString());
+    
+
 
     return (
-        <div className="w-full h-[calc(100vw-100px)] flex items-center overflow-auto flex-col gap-[40px]">
+        <div className="w-full h-[calc(100vh-100px)] flex items-center overflow-auto flex-col gap-[40px]">
             <div className="w-[900px] flex justify-between mt-[70px]">
-                <div className="text-[22px] flex text-cyan-400 gap-[15px]">Room name: <div className="text-white">{lobbyInfo.name}</div></div>
-                <div className="text-[22px] flex text-cyan-400 gap-[15px]">Join code: <div className="text-white">{lobbyInfo.joinCode}</div></div>
+                <div className="text-[22px] flex text-cyan-400 gap-[15px]">Room name: <div className="text-white">{lobby.name}</div></div>
+                <div className="text-[22px] flex text-cyan-400 gap-[15px]">Join code: <div className="text-white">{lobby.joinCode}</div></div>
             </div>
             <div className="w-[900px] h-[500px] bg-white/20 flex rounded-[10px] mt-[-20px] overflow-hidden">
                 <div className="w-1/2 h-full bg-cyan-500/10 p-[50px]">
                     <div className="w-full h-full flex flex-col">
                         <div className="w-full h-fit flex flex-col gap-[30px] items-center">
                             <div className="w-[200px] h-[200px] rounded-full overflow-hidden">
-                                <img src={lobbyInfo.players[0].avatar} />
+                                <img src={lobby.players[0].avatar ? lobby.players[0].avatar : "./globe.svg"} />
                             </div>
-                            <div className="flex text-[30px] gap-[20px] flex-wrap text-cyan-400">Player 1: <div className="text-white">{lobbyInfo.players[0].username}</div></div>
+                            <div className="flex text-[30px] gap-[20px] flex-wrap text-cyan-400">Player 1: <div className="text-white">{lobby.players[0].username}</div></div>
                         </div>
                     </div>
                 </div>
                 <div className="w-1/2 h-full p-[50px]">
                     <div className="w-full h-full flex flex-col">
-                        {lobbyInfo.players[1] ? <div className="w-full h-fit flex flex-col gap-[30px] items-center">
+                        {lobby.players[1] ? <div className="w-full h-fit flex flex-col gap-[30px] items-center">
                             <div className="w-[200px] h-[200px] rounded-full overflow-hidden">
-                                <img src={lobbyInfo.players[1].avatar} />
+                                <img src={lobby.players[1].avatar ? lobby.players[1].avatar : "./globe.svg"} />
                             </div>
-                            <div className="flex text-[30px] gap-[20px] flex-wrap text-cyan-400">Player 2: <div className="text-white">{lobbyInfo.players[1].username}</div></div>
+                            <div className="flex text-[30px] gap-[20px] flex-wrap text-cyan-400">Player 2: <div className="text-white">{lobby.players[1].username}</div></div>
                         </div> : 
                         <div className="w-full h-full flex flex-col justify-center items-center gap-[10px]">
                             <PlusCircleIcon size={72} stroke="#4CAF50"/>

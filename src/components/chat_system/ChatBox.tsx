@@ -130,7 +130,7 @@ export default function ChatBox(props) {
                 }`}
             >
               <div className="text-[15px] text-gray-500">{msg.sender}</div>
-              <div>{msg.text}</div>
+              <div className="break-words">{msg.text}</div>
               <div className="text-xs text-gray-500 mt-1 text-end">
                 {msg.userId !== "system" && msg.timestamp
                   ? new Date(msg.timestamp).toLocaleTimeString()
@@ -141,9 +141,9 @@ export default function ChatBox(props) {
             user.friends.map((friend, index) => (
               <div key={index} className="w-full my-[10px] p-[10px] py-[15px] rounded-[5px] bg-black/50 flex gap-[20px] cursor-pointer" onClick={() => setActiveUser([friend._id, friend.username, friend.avatar])}>
                 <div className="w-[30px] h-[30px] rounded-full">
-                  <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-full h-full object-cover"/>
+                  <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-full h-full object-cover rounded-full"/>
                 </div>
-                <div>{friend.username}</div>
+                <div className="truncate">{friend.username}</div>
               </div>
             ))
             : (
@@ -162,7 +162,7 @@ export default function ChatBox(props) {
                       : "bg-gray-900 mr-auto"
                     }`}
                   >
-                    <div>{msg.text}</div>
+                    <div className="break-words">{msg.text}</div>
                     <div className="text-xs text-gray-500 mt-1">
                       {msg.userId !== "system" && msg.timestamp
                         ? new Date(msg.timestamp).toLocaleTimeString()

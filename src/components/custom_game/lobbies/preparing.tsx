@@ -10,7 +10,7 @@ export default function Lobby(props) {
 
 
     return (
-        <div className="w-full h-[calc(100vw-100px)] flex items-center overflow-auto flex-col gap-[40px]">
+        <div className="w-full h-[calc(100vh-100px)] flex items-center overflow-auto flex-col gap-[40px]">
             <div className="w-[900px] flex justify-between mt-[70px]">
                 <div className="text-[22px] flex text-cyan-400 gap-[15px]">Room name: <div className="text-white">{lobbyInfo.name}</div></div>
                 <div className="text-[22px] flex text-cyan-400 gap-[15px]">Join code: <div className="text-white">{lobbyInfo.joinCode}</div></div>

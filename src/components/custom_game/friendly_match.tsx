@@ -55,6 +55,7 @@ export default function CustomGame(props) {
             console.log(response);
             setLobbyInfo(response.lobby);
             socket.emit("lobby:join",{room: response.lobby.joinCode.toString()});
+            setDialogOpen(false);
             setUserStatus("lobby");
         } catch (error) {
             console.error("Failed to create lobby:", error);
@@ -63,10 +64,10 @@ export default function CustomGame(props) {
 
     const formik = useFormik({
         initialValues: {
-            name: "",
+            name: `${user.username}'s lobby`,
             players: [user._id],
-            map: "",
-            game_mode: "",
+            map: "6814730c62f767babed37c83",
+            game_mode: "custom",
             status: "starting",
             isPrivate: false
         },

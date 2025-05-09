@@ -15,7 +15,7 @@ export default function ChatBox(props) {
   const messagesEndRef = useRef(null);
   const socket = useSocket();
 
-  const user = useUser();
+  const {user, refetchUser} = useUser();
 
   useEffect(() => {
     // // socketRef.current = io("https://maze-runner-backend-1.onrender.com", {

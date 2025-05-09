@@ -9,7 +9,7 @@ type props = {
 };
 
 export default function GameAreaTest(props: props) {
-  const user = useUser();
+  const {user, refetchUser} = useUser();
   const currentUserId = user._id;
   const { keybinds } = useKeyBind();
   const { setMenuState, menuState } = props;

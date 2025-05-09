@@ -23,7 +23,7 @@ export default function Game() {
   const [friendMenu, setFriendMenu] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const user = useUser();
+  const {user, refetchUser} = useUser();
 
   useEffect(() => {
     const token = localStorage.getItem("token");

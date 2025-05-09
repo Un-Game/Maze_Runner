@@ -15,7 +15,7 @@ const API_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/
 export const AddAvatar = () => {
   const [data, setData] = useState<File | null>(null);
   const [prevImg, setPrevImg] = useState<string | undefined>();
-  const user = useUser();
+  const {user, refetchUser} = useUser();
   console.log(user);
 
   const uploadCloudinary = async () => {

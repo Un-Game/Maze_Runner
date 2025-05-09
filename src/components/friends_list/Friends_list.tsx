@@ -28,7 +28,7 @@ type props = {
 
 export default function Friend_list(props: props) {
 
-    const user = useUser();
+    const {user, refetchUser} = useUser();
     const { setFriendMenu } = props;
     const [viewFriend, setViewFriend] = useState(null);
     const [error, setError] = useState(false);
@@ -38,6 +38,17 @@ export default function Friend_list(props: props) {
     const [searchResult, setSearchResult] = useState(null);
     const [isSending, setSending] = useState(null);
     const [incomingRequests, setIncomingRequests] = useState([]);
+
+    const fetchIncoming = async() => {
+        try{
+            const res = await axios.get(`https://maze-runner-backend-1.onrender.com/request/incoming/${user._id}`);
+            setIncomingRequests(res.data);
+            console.log(res.data);
+            
+        } catch(err){
+            console.log(err);
+        }
+    }
 
     const fetchUser = async(id) => {
         setDeletionConfirm(false);
@@ -58,6 +69,7 @@ export default function Friend_list(props: props) {
                 senderId: user._id,
                 receiverId: id
             });
+            await refetchUser();
             toast.info("Successfully removed");
         } catch(err){
             console.log(err);
@@ -98,7 +110,9 @@ export default function Friend_list(props: props) {
                     receiverId: user._id
                 }
             });
+            await refetchUser();
             console.log(resp);
+            fetchIncoming();
         } catch(err){
             console.log(err);
         }
@@ -112,24 +126,14 @@ export default function Friend_list(props: props) {
                 }
             });
             console.log(resp);
+            fetchIncoming()
         } catch(err){
             console.log(err);
         }
     }
+    
 
     useEffect(()=> {
-
-        const fetchIncoming = async() => {
-            try{
-                const res = await axios.get(`https://maze-runner-backend-1.onrender.com/request/incoming/${user._id}`);
-                setIncomingRequests(res.data);
-                console.log(res.data);
-                
-            } catch(err){
-                console.log(err);
-            }
-        }
-
         fetchIncoming()
     },[])
 

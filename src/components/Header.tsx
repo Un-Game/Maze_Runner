@@ -16,11 +16,11 @@ export default function Header(props: props) {
     "/music/stardust.mp3",
   ];
 
-  const user = useUser();
-  const { setMenuState } = props;
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const currentTrackRef = useRef(musicList[1]);
-  const [isPlaying, setIsPlaying] = useState(false);
+    const {user, refetchUser} = useUser();
+    const { setMenuState } = props;
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const currentTrackRef = useRef(musicList[1]);
+    const [isPlaying, setIsPlaying] = useState(false);
 
   const toggleAudio = () => {
     const audio = audioRef.current;

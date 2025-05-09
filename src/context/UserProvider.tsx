@@ -29,7 +29,6 @@ export const UserProvider = ({ children }) => {
         const decoded = jwtDecode(token) as { user?: { _id?: string } };
         const { _id } = decoded?.user || {};
         if (_id) {
-          console.log(_id);
           fetchUser(_id);
         } else {
           console.error("Token missing _id");

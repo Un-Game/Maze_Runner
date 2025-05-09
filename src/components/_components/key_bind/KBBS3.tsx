@@ -30,7 +30,7 @@ const KBBS3 = () => {
     <div className="flex flex-col mt-[25px] p-20 w-[800px] py-5 text-4xl font-extrabold tracking-widest text-cyan-300 uppercase bg-black border-2 border-cyan-400 shadow-[0_0_20px_#00ffff] transition-transform duration-300 text-start px-[30px] justify-start gap-[20px]">
       <div className="w-full flex gap-20 justify-between">
         <div className="flex items-start justify-start">
-          <h3>skill three:</h3>
+          <h3>ghost mode:</h3>
         </div>
         <div className="flex justify-end items-end pr-[100px]">
           <input

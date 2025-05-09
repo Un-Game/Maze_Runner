@@ -14,8 +14,8 @@ export const UserProvider = ({ children }) => {
 
   const refetchUser = async (_id: string) => {
     try {
-      // const res = await axios.get(`https://maze-runner-backend-1.onrender.com/user/${_id}`);
-      const res = await axios.get(`http://localhost:999/user/${_id}`);
+      const res = await axios.get(`https://maze-runner-backend-1.onrender.com/user/${_id}`);
+      // const res = await axios.get(`http://localhost:999/user/${_id}`);
       setUser(res.data);
     } catch (error) {
       console.error("Fetch user error:", error);
@@ -24,19 +24,30 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const fetchUser = async (_id: string) => {
+      try {
+        const res = await axios.get(`https://maze-runner-backend-1.onrender.com/user/${_id}`);
+        // const res = await axios.get(`http://localhost:999/user/${_id}`);
+        setUser(res.data);
+      } catch (error) {
+        console.error("Fetch user error:", error);
+        setUser(null);
+      }
+    };
+
     const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token) as { user?: { _id?: string } };
         const { _id } = decoded?.user || {};
         if (_id) {
-<<<<<<< Updated upstream
+
           fetchUser(_id);
-=======
+
           console.log(_id);
           setUserId(_id);
           refetchUser(_id);
->>>>>>> Stashed changes
+
         } else {
           console.error("Token missing _id");
           setUser(null);

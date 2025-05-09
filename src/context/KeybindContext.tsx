@@ -60,7 +60,7 @@ export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
     const fetchKeybinds = async () => {
       const currentUserId = user._id;
       try {
-        const res = await fetch(`http://localhost:999/user/${currentUserId}`);
+        const res = await fetch(`https://maze-runner-backend-1.onrender.com/user/${currentUserId}`);
         if (!res.ok) throw new Error("Failed to fetch keybinds");
         const data = await res.json();
 
@@ -81,7 +81,7 @@ export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
     const currentUserId = user._id;
 
     try {
-      const res = await fetch(`http://localhost:999/user/${currentUserId}`, {
+      const res = await fetch(`https://maze-runner-backend-1.onrender.com/user/${currentUserId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

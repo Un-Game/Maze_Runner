@@ -293,7 +293,7 @@ export default function GameAreaTest(props: props) {
       console.log("Gained:", gainedExp, "New Total:", newTotalExp);
 
       if (gainedExp) {
-        fetch(`http://localhost:999/user/${currentUserId}`, {
+        fetch(`https://maze-runner-backend-1.onrender.com/user/${currentUserId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

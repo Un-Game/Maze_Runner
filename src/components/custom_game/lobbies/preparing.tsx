@@ -16,10 +16,9 @@ export default function Lobby(props) {
             return;
 
         // if(lobbyInfo.players[0].username !== user.username)
-        socket.emit("lobby:join", {room: lobby.joinCode.toString()});
 
         socket.on("lobby:update", async()=> {
-            const response = await axios.get(`http://localhost:999/lobby/${lobby.joinCode}`);
+            const response = await axios.get(`https://maze-runner-backend-1.onrender.com/lobby/${lobby.joinCode}`);
             console.log(response.data);
             setLobby(response.data);
         })
@@ -32,8 +31,6 @@ export default function Lobby(props) {
         socket.emit("lobby:leave", {room: lobby.joinCode.toString()});
         setUserStatus("menu");
     }
-
-    console.log(lobby.joinCode.toString());
     
 
 
@@ -71,7 +68,7 @@ export default function Lobby(props) {
             </div>
             <div className="flex text-[20px] gap-[50px]">
                 <button className="w-[300px] bg-red-500/80 rounded-[10px] text-[35px]" onClick={()=>leave()}>Leave</button>
-                <button className="w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px]">Start</button>
+                {/* <button className="w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px]">Start</button> */}
             </div>
         </div>
     )

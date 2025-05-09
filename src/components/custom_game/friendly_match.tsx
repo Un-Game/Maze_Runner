@@ -54,7 +54,7 @@ export default function CustomGame(props) {
             const response = await createLobby(values.players, values.map, values.status, values.game_mode, values.isPrivate, values.name);
             console.log(response);
             setLobbyInfo(response.lobby);
-            // socket.emit("lobby:join",{room: response.lobby.});
+            socket.emit("lobby:join",{room: response.lobby.joinCode.toString()});
             setUserStatus("lobby");
         } catch (error) {
             console.error("Failed to create lobby:", error);
@@ -78,7 +78,7 @@ export default function CustomGame(props) {
 
     const fetchLobby = async () => {
         try {
-            const data = await axios.get("http://localhost:999/lobby");
+            const data = await axios.get("https://maze-runner-backend-1.onrender.com/lobby");
             setLobbies(data.data);
         } catch (err) {
             console.log(err);
@@ -100,21 +100,24 @@ export default function CustomGame(props) {
 
     const joinLobby = async(code) => {
         try{
-            const response = await axios.get(`http://localhost:999/lobby/${code}`);
+            const response = await axios.get(`https://maze-runner-backend-1.onrender.com/lobby/${code}`);
             console.log(response);
             
             if(response.data === "Not found"){
                 toast.error("Lobby not found");
             }else{
+                socket.emit("lobby:join", {room: response.data.joinCode.toString()});
                 setLobbyInfo(response.data);
-                setUserStatus("lobby");
+                // setUserStatus("lobby");
             }
         } catch(err){
             console.log(err);
         }
-        
+        socket.off("lobby:error");
+        socket.on("lobby:error", (data)=>{toast.info("Lobby full"); console.log(data.message);});
+        socket.on("lobby:success", ()=>{setUserStatus("lobby")});
     }
-    
+    const filteredLobbies = lobbies.filter((el) => el.players.length === 1);
     console.log(lobbies);
     
 
@@ -216,10 +219,10 @@ export default function CustomGame(props) {
                         <div>Refresh</div>
                         <RefreshCcw className="w-[23px] h-[23px]" />
                     </button>
-                    {lobbies.length === 0 ? <div className="w-full text-[30px] h-[300px] flex items-center justify-center">
+                    {filteredLobbies.length === 0 ? <div className="w-full text-[30px] h-[300px] flex items-center justify-center">
                         No public lobby to show here
                     </div> :
-                        lobbies.map((el, ind) => (
+                        filteredLobbies.map((el, ind) => (
                             <button key={ind} className="w-[750px] h-[80px] rounded-[10px] bg-gray-400/20 flex px-[30px] items-center justify-between hover:scale-103 transition duration-100" onClick={() => joinLobby(el.joinCode)}>
                                 <div className="flex gap-[20px] w-[300px]">
                                     <div className="text-cyan-400 text-[20px] text-nowrap">Lobby name:</div>

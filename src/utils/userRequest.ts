@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const BASE_URL = "http://localhost:999";
+const BASE_URL = "https://maze-runner-backend-1.onrender.com";
 
 const instance = axios.create({ baseURL: BASE_URL });
 

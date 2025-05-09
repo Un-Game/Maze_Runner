@@ -8,7 +8,7 @@ export default function Lobby(props) {
 
     const { lobbyInfo, setUserStatus } = props;
     const [lobby, setLobby] = useState(lobbyInfo);
-    const user = useUser();
+    const {user, refetchUser} = useUser();
     const socket = useSocket();
 
     useEffect(()=>{

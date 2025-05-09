@@ -11,7 +11,7 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
-  const user = useUser();
+  const {user, refetchUser} = useUser();
 
   useEffect(() => {
     if (!user?._id) return;

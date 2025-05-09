@@ -47,7 +47,7 @@ export const useKeyBind = () => {
 
 export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
   const [keybinds, setKeybinds] = useState<Keybinds>(defaultKeybinds);
-  const user = useUser();
+  const {user, refetchUser} = useUser();
 
   const updateKeybind = (key: keyof Keybinds, value: string) => {
     setKeybinds((prev) => ({

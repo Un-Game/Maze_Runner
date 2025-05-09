@@ -39,7 +39,7 @@ export default function CustomGame(props) {
     const [searchValue, setSearchValue] = useState('');
     const [userStatus, setUserStatus] = useState("menu");
     const [lobbyInfo, setLobbyInfo] = useState(null);
-    const user = useUser();
+    const {user, refetchUser} = useUser();
     const socket = useSocket();
 
     useEffect(()=>{

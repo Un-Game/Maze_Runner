@@ -7,7 +7,7 @@ import { Input } from "../ui/input";
 import { useState } from "react";
 
 export const ChangePassword = () => {
-  const user = useUser();
+  const {user, refetchUser} = useUser();
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 

@@ -23,6 +23,9 @@ export default function Lobby(props) {
             setLobby(response.data);
         })
 
+        socket.on("lobby:start", ()=> {
+            setUserStatus("game");
+        })
 
     },[socket])
 
@@ -30,6 +33,10 @@ export default function Lobby(props) {
     const leave = () => {
         socket.emit("lobby:leave", {room: lobby.joinCode.toString()});
         setUserStatus("menu");
+    }
+    const start = () => {
+        if(lobby.players.length!==2) return;
+        socket.emit("lobby:start", {room: lobby.joinCode.toString()});
     }
     
 
@@ -68,7 +75,7 @@ export default function Lobby(props) {
             </div>
             <div className="flex text-[20px] gap-[50px]">
                 <button className="w-[300px] bg-red-500/80 rounded-[10px] text-[35px]" onClick={()=>leave()}>Leave</button>
-                {/* <button className="w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px]">Start</button> */}
+                {lobby.players[0].username === user.username &&  <button className={`w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px] ${lobby.players.length!==2 && "bg-gray-500"}`} onClick={()=>start()}>Start</button>}
             </div>
         </div>
     )

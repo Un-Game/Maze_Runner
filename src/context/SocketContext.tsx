@@ -16,7 +16,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!user?._id) return;
 
-    socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
+    socketRef.current = io("http://localhost:999", {
+    // socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
       withCredentials: true,
     });
 

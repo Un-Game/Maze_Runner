@@ -1,0 +1,33 @@
+import { useEffect, useState } from "react";
+import GameAreaMultiplayer from "../game_folder/game_logic";
+import axios from "axios";
+
+export default function Ingame(props) {
+
+    const {lobbyInfo} = props;
+    const [lobby, setLobby] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+
+        const fetchLobby = async()=>{
+            try{
+                const response = await axios.get(`http://localhost:999/lobby/${lobbyInfo}`);
+                console.log(response.data);
+                setLobby(response.data);
+                setLoading(false);
+            }catch(err){
+                console.log(err);
+            }
+        }
+
+        fetchLobby();
+    },[])
+    
+
+    return loading ? <div className="w-full h-full items-center justify-center bg-black">
+        <div className="text-[30px] text-cyan-300">Loading...</div>
+    </div> : <div className="w-full h-full justify-center items-center">
+        <GameAreaMultiplayer lobby={lobby}/>
+    </div>
+}

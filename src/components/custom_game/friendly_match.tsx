@@ -2,7 +2,7 @@
 
 import { useUser } from "@/context/UserProvider";
 import BackButton from "../_components/back_button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect , useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -30,6 +30,7 @@ import { useSocket } from "@/context/SocketContext";
 import Lobby from "./lobbies/preparing";
 import { toast, ToastContainer } from "react-toastify";
 import { Input } from "../ui/input";
+import Ingame from "./lobbies/game";
 
 export default function CustomGame(props) {
     const { setMenuState, menuState } = props;
@@ -39,7 +40,7 @@ export default function CustomGame(props) {
     const [searchValue, setSearchValue] = useState('');
     const [userStatus, setUserStatus] = useState("menu");
     const [lobbyInfo, setLobbyInfo] = useState(null);
-    const {user, refetchUser} = useUser();
+    const {user} = useUser();
     const socket = useSocket();
 
     useEffect(()=>{
@@ -243,5 +244,6 @@ export default function CustomGame(props) {
                 </div>
             </div>
         </div>
-    ) : userStatus === "lobby" ? <Lobby lobbyInfo={lobbyInfo} setUserStatus={setUserStatus}/> : <div></div>
+    ) : userStatus === "lobby" ? <Lobby lobbyInfo={lobbyInfo} setUserStatus={setUserStatus}/> 
+      : userStatus === "game" && <Ingame lobbyInfo={lobbyInfo.joinCode}/>
 }

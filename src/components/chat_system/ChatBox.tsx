@@ -15,7 +15,29 @@ export default function ChatBox(props) {
   const messagesEndRef = useRef(null);
   const socket = useSocket();
 
-  const {user, refetchUser} = useUser();
+  const { user, refetchUser } = useUser();
+
+  const fetchDMHistory = async () => {
+    if (!activeUser || !user?._id) return;
+
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:999";
+      const res = await fetch(`${baseUrl}/message/${user._id}/${activeUser[0]}`);
+
+      const history = await res.json();
+
+      setDms(prev => ({
+        ...prev,
+        [activeUser[0]]: history,
+      }));
+    } catch (error) {
+      console.error("Failed to load DM history", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDMHistory();
+  }, [activeUser])
 
   useEffect(() => {
     // // socketRef.current = io("https://maze-runner-backend-1.onrender.com", {
@@ -24,7 +46,7 @@ export default function ChatBox(props) {
     // });
 
 
-    if(!socket) return;
+    if (!socket) return;
 
     socket.on("chat:message", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
@@ -52,7 +74,7 @@ export default function ChatBox(props) {
     //   socketRef.current.disconnect();
     // };
   }, [socket]);
-  
+
 
 
   useEffect(() => {
@@ -141,7 +163,7 @@ export default function ChatBox(props) {
             user.friends.map((friend, index) => (
               <div key={index} className="w-full my-[10px] p-[10px] py-[15px] rounded-[5px] bg-black/50 flex gap-[20px] cursor-pointer" onClick={() => setActiveUser([friend._id, friend.username, friend.avatar])}>
                 <div className="w-[30px] h-[30px] rounded-full">
-                  <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-full h-full object-cover rounded-full"/>
+                  <img src={friend.avatar ? friend.avatar : "./globe.svg"} className="w-full h-full object-cover rounded-full" />
                 </div>
                 <div className="truncate">{friend.username}</div>
               </div>
@@ -150,7 +172,7 @@ export default function ChatBox(props) {
               <>
                 <div className="w-full h-[40px] bg-white/20 sticky top-0 flex items-center gap-[15px] px-[10px] rounded-[5px] backdrop-blur-[10px] mb-[10px]">
                   <div className="w-[30px] h-[30px] rounded-full overflow-hidden">
-                    <img src={activeUser[2] ? activeUser[2] : "./globe.svg"}/>
+                    <img src={activeUser[2] ? activeUser[2] : "./globe.svg"} />
                   </div>
                   <div>{activeUser[1]}</div>
                 </div>
@@ -160,7 +182,7 @@ export default function ChatBox(props) {
                     className={`mb-2 p-2 rounded max-w-xs ${msg.userId === user._id
                       ? "bg-cyan-900 ml-auto"
                       : "bg-gray-900 mr-auto"
-                    }`}
+                      }`}
                   >
                     <div className="break-words">{msg.text}</div>
                     <div className="text-xs text-gray-500 mt-1">

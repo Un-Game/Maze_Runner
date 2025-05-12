@@ -131,6 +131,7 @@ export default function GameAreaMultiplayer({lobby}) {
     y: 0,
   });
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
+  const [ping, setPing] = useState(0);
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
@@ -352,13 +353,23 @@ export default function GameAreaMultiplayer({lobby}) {
 
 
       setRenderPosition({ x: playerBody.position.x, y: playerBody.position.y });
-
+  
       socket.emit("game:move",{x: playerBody.position.x, y: playerBody.position.y, room: lobby.joinCode.toString()});
-
+      
       setVelocity({ x: playerBody.velocity.x, y: playerBody.velocity.y });
     };
-
-
+    
+    const pingCheck = setInterval(()=>{
+      const timeStamp = Date.now();
+      socket.emit("game:ping",{timeStamp: timeStamp});
+      
+    },2000);
+    socket.on("game:ping",(data)=>{
+      const {timeStamp} = data;
+      const now = Date.now();
+      setPing(now-timeStamp);
+      console.log(now-timeStamp, timeStamp);
+    })
     Events.on(engine, 'afterUpdate', updateCallback);
 
 
@@ -371,7 +382,8 @@ export default function GameAreaMultiplayer({lobby}) {
 
 
     return () => {
-      console.log("Cleaning up Matter.js instance");
+
+      clearInterval(pingCheck);
 
       Runner.stop(runner);
 
@@ -391,7 +403,6 @@ export default function GameAreaMultiplayer({lobby}) {
     };
     
   }, [handleKeyDown, handleKeyUp]);
-
 
   return (
    <div> 
@@ -455,6 +466,8 @@ export default function GameAreaMultiplayer({lobby}) {
         Velocity: X: {velocity.x.toFixed(2)}, Y: {velocity.y.toFixed(2)}
         <br />
         Position: X: {renderPosition.x.toFixed(0)}, Y: {renderPosition.y.toFixed(0)}
+        <br />
+        Ping: {ping}
       </div>
       <div className="absolute bottom-96 right-24 text-white text-xs font-mono flex flex-col gap-[20px]">
         <button disabled={playerSetting.skills.skill1.isInCooldown} className={`border bg-black p-[20px] rounded-[10px] ${playerSetting.skills.skill1.isInCooldown ? "border-red-500" : "border-green-500"}`}>Skill 1: {playerSetting.skills.skill1.isInCooldown ? "In Cooldown" : "Ready"}</button>

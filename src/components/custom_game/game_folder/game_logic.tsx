@@ -205,7 +205,7 @@ export default function GameAreaMultiplayer({lobby}) {
       currMap.spawnPoint[1].x,
       currMap.spawnPoint[1].y,
       config.ballRadius,
-      // config.playerOptions
+      config.playerOptions
     );
     if(lobby.players[0].username == user.username){
         playerBodyRef.current = player;

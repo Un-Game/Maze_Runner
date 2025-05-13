@@ -13,7 +13,6 @@ export default function Ingame(props) {
         const fetchLobby = async()=>{
             try{
                 const response = await axios.get(`http://localhost:999/lobby/${lobbyInfo}`);
-                console.log(response.data);
                 setLobby(response.data);
                 setLoading(false);
             }catch(err){

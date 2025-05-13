@@ -19,7 +19,6 @@ export default function Lobby(props) {
 
         socket.on("lobby:update", async()=> {
             const response = await axios.get(`https://maze-runner-backend-1.onrender.com/lobby/${lobby.joinCode}`);
-            console.log(response.data);
             setLobby(response.data);
         })
 

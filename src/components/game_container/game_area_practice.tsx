@@ -112,13 +112,13 @@ const currMap = {
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1],
     [1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 2],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+    [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ],
-  spawnPoint: { x: 10, y: 10 },
-  exitPoint: { x: 100, y: 100 },
+  spawnPoint: [{x:100, y:100},{x: 600, y:600}],
+  exitPoint: { x: 700, y: 700, w: 100, h: 100 },
 }
 
 const maze = currMap.maze
@@ -144,6 +144,7 @@ export default function GameAreaPracticeMatter(props:props) {
   const player2BodyRef = useRef<Matter.Body | null>(null);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const cellSize = 17
+  const [scale, setScale] = useState(100);
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     keysPressed.current[event.key.toLowerCase()] = true;
@@ -152,6 +153,29 @@ export default function GameAreaPracticeMatter(props:props) {
   const handleKeyUp = useCallback((event: KeyboardEvent) => {
     keysPressed.current[event.key.toLowerCase()] = false;
   }, []);
+
+  useEffect(()=>{
+    const handleWheel = (e) => {
+      setScale((prev) => {
+        const delta = e.deltaY > 0 ? 10 : -10;
+        const next = prev + delta;
+        if(next > 150){
+          return 150;
+        } else if(next < 50){
+          return 50;
+        } else {
+          return next;
+        }
+      });
+      
+    };
+
+    window.addEventListener("wheel", handleWheel);
+    return () => window.removeEventListener("wheel", handleWheel);
+  },[])
+
+  console.log(scale);
+  
 
   useEffect(() => {
     const engine = engineRef.current;
@@ -195,7 +219,6 @@ export default function GameAreaPracticeMatter(props:props) {
     ];
 
     const mazeBody = [];
-    const finishPoint = [];
 
     for (let row = 0; row < maze.length; row++) {
       for (let col = 0; col < maze[row].length; col++) {
@@ -209,31 +232,16 @@ export default function GameAreaPracticeMatter(props:props) {
           );
           mazeBody.push(wall);
         }
-        if (maze[row][col] === 2) {
-          const finish = Bodies.rectangle(
-            col * cellSize + cellSize / 2,
-            row * cellSize + cellSize / 2,
-            cellSize,
-            cellSize,
-            { isStatic: true, isSensor: true }
-          );
-          finishPoint.push(finish);
-        }
       }
     }
 
     Composite.add(engine.world, walls);
     Composite.add(engine.world, mazeBody);
-    Composite.add(engine.world, finishPoint);
 
 
-
-
-    const initialX = 20;
-    const initialY = 20;
     const player = Bodies.circle(
-      initialX,
-      initialY,
+      currMap.spawnPoint[0].x,
+      currMap.spawnPoint[0].y,
       config.ballRadius,
       config.playerOptions
     );
@@ -241,8 +249,8 @@ export default function GameAreaPracticeMatter(props:props) {
     Composite.add(engine.world, player);
 
     const player2 = Bodies.circle(
-      20,
-      50,
+      currMap.spawnPoint[1].x,
+      currMap.spawnPoint[1].y,
       config.ballRadius,
       config.playerOptions
     );
@@ -385,12 +393,13 @@ export default function GameAreaPracticeMatter(props:props) {
       style={{
         width: `${config.containerWidth}px`,
         height: `${config.containerHeight}px`,
+        transform: `scale(${scale / 100})`
       }}
-      className="ml-[200px] border border-green-300 relative overflow-hidden bg-gray-800"
+      className={`ml-[200px] border border-green-300 relative overflow-hidden bg-gray-800`}
     >
 
       <div
-        className="absolute rounded-full bg-red-500"
+        className={`absolute rounded-full bg-red-500`}
         style={{
           width: `${config.ballRadius * 2}px`,
           height: `${config.ballRadius * 2}px`,

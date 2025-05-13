@@ -3,12 +3,13 @@ import Matter from "matter-js";
 import { useKeyBind } from "@/context/KeybindContext";
 import { useUser } from "@/context/UserProvider";
 import { useSocket } from "@/context/SocketContext";
+import axios from "axios";
 
 const { Engine, Runner, Bodies, Body, Composite, Events } = Matter;
 
 const config = {
-  containerWidth: 1500,
-  containerHeight: 900,
+  containerWidth: 850,
+  containerHeight: 850,
   wallThickness: 50,
   ballRadius: 5,
   moveForce: 0.001,
@@ -18,6 +19,7 @@ const config = {
     restitution: 0,
     friction: 0.1,
     frictionAir: 0.02,
+    label: "player"
   },
   inputKeys: {
     skill1: "c",
@@ -48,8 +50,9 @@ const playerSetting = {
     skill3: {
       name: "Skill 3",
       description: "Skill 3 description",
-      cooldown: 2000,
+      cooldown: 5000,
       isInCooldown: false,
+      isInEffect: false,
       startedAt: 0,
     }
   },
@@ -59,65 +62,6 @@ const playerSetting = {
   }
 }
 
-
-const currMap = {
-  maze: [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 2],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  ],
-  spawnPoint: { x: 10, y: 10 },
-  exitPoint: { x: 100, y: 100 },
-}
-
-const maze = currMap.maze
 
 export default function GameAreaMultiplayer({lobby}) {
   const {keybinds} = useKeyBind()
@@ -132,6 +76,7 @@ export default function GameAreaMultiplayer({lobby}) {
   });
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [ping, setPing] = useState(0);
+  const [currMap, setCurrMap] = useState(null);
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
@@ -151,11 +96,32 @@ export default function GameAreaMultiplayer({lobby}) {
     keysPressed.current[event.key.toLowerCase()] = false;
   }, []);
 
+
+  const fetchMap = async() => {
+    try{
+      const response = await axios.get(`http://localhost:999/map/${lobby.map}`);
+      setCurrMap(response.data.layout);
+      
+    }catch(err){
+      console.log(err);
+    }
+  }
+
+  useEffect(()=>{
+    fetchMap();
+  },[])
+
+  const endMatch = () => {
+    console.log("finish");
+    
+  }
+  
   useEffect(() => {
+
+    if(!currMap) return;
+    
     const engine = engineRef.current;
     const runner = runnerRef.current;
-
-    console.log(lobby);
     
     engine.gravity.y = 0;
 
@@ -195,11 +161,10 @@ export default function GameAreaMultiplayer({lobby}) {
     ];
 
     const mazeBody = [];
-    const finishPoint = [];
 
-    for (let row = 0; row < maze.length; row++) {
-      for (let col = 0; col < maze[row].length; col++) {
-        if (maze[row][col] === 1) {
+    for (let row = 0; row < currMap.maze.length; row++) {
+      for (let col = 0; col < currMap.maze[row].length; col++) {
+        if (currMap.maze[row][col] === 1) {
           const wall = Bodies.rectangle(
             col * cellSize + cellSize / 2,
             row * cellSize + cellSize / 2,
@@ -209,40 +174,38 @@ export default function GameAreaMultiplayer({lobby}) {
           );
           mazeBody.push(wall);
         }
-        if (maze[row][col] === 2) {
-          const finish = Bodies.rectangle(
-            col * cellSize + cellSize / 2,
-            row * cellSize + cellSize / 2,
-            cellSize,
-            cellSize,
-            { isStatic: true, isSensor: true }
-          );
-          finishPoint.push(finish);
-        }
       }
     }
 
+    const { x, y, w, h } = currMap.exitPoint;
+    const finish = Bodies.rectangle(
+      x + w / 2,
+      y + h / 2,
+      w,
+      h,
+      {isStatic: true, isSensor:true, label:"finish"}
+    );
+    
+
     Composite.add(engine.world, walls);
     Composite.add(engine.world, mazeBody);
-    Composite.add(engine.world, finishPoint);
+    Composite.add(engine.world, finish);
 
 
-
-
-    const initialX = 20;
-    const initialY = 20;
+    console.log(currMap.spawnPoint[0]);
+    
     const player = Bodies.circle(
-      initialX,
-      initialY,
+      currMap.spawnPoint[0].x,
+      currMap.spawnPoint[0].y,
       config.ballRadius,
-      config.playerOptions
+      config.playerOptions,
     );
     
     const player2 = Bodies.circle(
-        20,
-        50,
-        config.ballRadius,
-        config.playerOptions
+      currMap.spawnPoint[1].x,
+      currMap.spawnPoint[1].y,
+      config.ballRadius,
+      // config.playerOptions
     );
     if(lobby.players[0].username == user.username){
         playerBodyRef.current = player;
@@ -322,14 +285,17 @@ export default function GameAreaMultiplayer({lobby}) {
 
       if( keysPressed.current[keybinds.skill3] && !playerSetting.skills.skill3.isInCooldown) {
         playerSetting.skills.skill3.isInCooldown = true
+        playerSetting.skills.skill3.isInEffect = true;
         Matter.Body.set(playerBody, {isSensor: true});
         setTimeout(() => {
           playerSetting.skills.skill3.isInCooldown = false;
         }, playerSetting.skills.skill3.cooldown);
         setTimeout(()=> {
           Matter.Body.set(playerBody, {isSensor: false});
+          playerSetting.skills.skill3.isInEffect = false;
         }, 200)
       }
+      
 
 
 
@@ -357,7 +323,20 @@ export default function GameAreaMultiplayer({lobby}) {
       socket.emit("game:move",{x: playerBody.position.x, y: playerBody.position.y, room: lobby.joinCode.toString()});
       
       setVelocity({ x: playerBody.velocity.x, y: playerBody.velocity.y });
+      
     };
+      Matter.Events.on(engine, 'collisionStart', (event) => {
+        const pairs = event.pairs;
+        for (let i = 0; i < pairs.length; i++) {
+            const pair = pairs[i];
+            if(pair.bodyA.label === "finish" && pair.bodyB.label === "player"){
+              endMatch();
+            }
+            if(pair.bodyA.label === "player" && pair.bodyB.label === "finish"){
+              endMatch();
+            }
+        }
+    });
     
     const pingCheck = setInterval(()=>{
       const timeStamp = Date.now();
@@ -368,7 +347,6 @@ export default function GameAreaMultiplayer({lobby}) {
       const {timeStamp} = data;
       const now = Date.now();
       setPing(now-timeStamp);
-      console.log(now-timeStamp, timeStamp);
     })
     Events.on(engine, 'afterUpdate', updateCallback);
 
@@ -402,17 +380,17 @@ export default function GameAreaMultiplayer({lobby}) {
 
     };
     
-  }, [handleKeyDown, handleKeyUp]);
+  }, [handleKeyDown, handleKeyUp, currMap]);
 
-  return (
-   <div> 
+  return currMap ? (
+   <div className="w-full h-full flex justify-center"> 
     <div
       ref={sceneRef}
       style={{
         width: `${config.containerWidth}px`,
         height: `${config.containerHeight}px`,
       }}
-      className="ml-[200px] border border-green-300 relative overflow-hidden bg-gray-800"
+      className="border items-center border-green-300 relative overflow-hidden w-fit h-fit bg-gray-800 scale-100"
     >
 
       <div
@@ -420,7 +398,7 @@ export default function GameAreaMultiplayer({lobby}) {
         style={{
           width: `${config.ballRadius * 2}px`,
           height: `${config.ballRadius * 2}px`,
-
+          opacity: playerSetting.skills.skill3.isInEffect ? 0.2 : 1,
           transform: `translate(${renderPosition.x - config.ballRadius}px, ${renderPosition.y - config.ballRadius}px)`,
 
         }}
@@ -436,7 +414,17 @@ export default function GameAreaMultiplayer({lobby}) {
         }}
       />
 
-      {maze.map((row, rowIndex) =>
+      <div
+        className="absolute bg-blue-500 z-[-1]"
+        style={{
+          width: `${currMap.exitPoint.w}px`,
+          height: `${currMap.exitPoint.h}px`,
+          transform: `translate(${currMap.exitPoint.x}px, ${currMap.exitPoint.y}px)`
+        }}
+      ></div>
+
+
+      {currMap.maze.map((row, rowIndex) =>
         row.map((cell, colIndex) =>
           cell === 1 ? (
             <div
@@ -461,6 +449,7 @@ export default function GameAreaMultiplayer({lobby}) {
           ) : null
         )
       )}
+    </div>
 
       <div className="absolute top-2 right-2 text-white text-xs font-mono">
         Velocity: X: {velocity.x.toFixed(2)}, Y: {velocity.y.toFixed(2)}
@@ -474,7 +463,10 @@ export default function GameAreaMultiplayer({lobby}) {
         <button disabled={playerSetting.skills.skill2.isInCooldown} className={`border bg-black p-[20px] rounded-[10px] ${playerSetting.skills.skill2.isInCooldown ? "border-red-500" : playerSetting.skills.skill2.usedState ? "border-yellow-500" : "border-green-500"}`}>Skill 2: {playerSetting.skills.skill2.isInCooldown ? "In Cooldown" : "Ready"}</button>
         <button disabled={playerSetting.skills.skill3.isInCooldown} className={`border bg-black p-[20px] rounded-[10px] ${playerSetting.skills.skill3.isInCooldown ? "border-red-500" : "border-green-500"}`}>Skill 3: {playerSetting.skills.skill3.isInCooldown ? "In Cooldown" : "Ready"}</button>
       </div>
-    </div>
    </div>
+  ) : (
+    <div className="w-screen h-screen flex justify-center items-center">
+      <div className="text-[30px] text-cyan-300">Loading...</div>
+    </div>
   );
 }

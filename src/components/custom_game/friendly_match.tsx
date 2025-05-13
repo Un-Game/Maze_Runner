@@ -53,7 +53,6 @@ export default function CustomGame(props) {
     const handleSubmit = async (values) => {
         try {
             const response = await createLobby(values.players, values.map, values.status, values.game_mode, values.isPrivate, values.name);
-            console.log(response);
             setLobbyInfo(response.lobby);
             socket.emit("lobby:join",{room: response.lobby.joinCode.toString()});
             setDialogOpen(false);
@@ -67,13 +66,13 @@ export default function CustomGame(props) {
         initialValues: {
             name: `${user.username}'s lobby`,
             players: [user._id],
-            map: "6814730c62f767babed37c83",
+            map: "68231d95c7b65c3d7e57383c",
             game_mode: "custom",
             status: "starting",
             isPrivate: false
         },
         onSubmit: async (values) => {
-            console.log("Creating lobby with:", values);
+            // console.log("Creating lobby with:", values);
             await handleSubmit(values);
         },
     });
@@ -120,7 +119,6 @@ export default function CustomGame(props) {
         socket.on("lobby:success", ()=>{setUserStatus("lobby")});
     }
     const filteredLobbies = lobbies.filter((el) => el.players.length === 1);
-    console.log(lobbies);
     
 
     return userStatus === "menu" ? (

@@ -28,7 +28,7 @@ import axios from "axios";
 import { RefreshCcw } from "lucide-react";
 import { useSocket } from "@/context/SocketContext";
 import Lobby from "./lobbies/preparing";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Input } from "../ui/input";
 import Ingame from "./lobbies/game";
 
@@ -125,7 +125,6 @@ export default function CustomGame(props) {
 
     return userStatus === "menu" ? (
         <div>
-            <ToastContainer theme="dark" position="top-center" autoClose={1000} hideProgressBar/>
             <BackButton setMenuState={setMenuState} menuState={menuState} />
             <div className="w-full h-[calc(100vh-100px)] flex flex-col items-center gap-[50px]">
                 <div className="flex gap-[50px] h-fit mt-[50px]">

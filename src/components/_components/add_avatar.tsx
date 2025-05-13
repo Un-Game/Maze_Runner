@@ -6,6 +6,8 @@ import axios from "axios";
 import { useFormik } from "formik";
 import { ChangeEvent, useState } from "react";
 import { Input } from "../ui/input";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
@@ -15,11 +17,11 @@ const API_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/
 export const AddAvatar = () => {
   const [data, setData] = useState<File | null>(null);
   const [prevImg, setPrevImg] = useState<string | undefined>();
-  const {user, refetchUser} = useUser();
+  const { user, refetchUser } = useUser();
   console.log(user);
 
   const uploadCloudinary = async () => {
-    if (!data) alert("Please insert photo");
+    if (!data) toast.error("Please select a photo to upload.");
 
     try {
       const file = new FormData();
@@ -36,9 +38,8 @@ export const AddAvatar = () => {
 
       return response.data.secure_url;
     } catch (error) {
-      console.log(error);
+      toast.error("Image upload failed.");
       throw error;
-      //  toast
     }
   };
 
@@ -64,7 +65,7 @@ export const AddAvatar = () => {
       if (data) {
         avatarUrl = await uploadCloudinary();
         if (avatarUrl) {
-          formik.setFieldValue("avatar", avatarUrl); 
+          formik.setFieldValue("avatar", avatarUrl);
         }
       }
 
@@ -74,9 +75,10 @@ export const AddAvatar = () => {
         exp: values.exp,
       });
 
-      console.log(updatedUser);
+      toast.success("Avatar updated successfully!");
+      refetchUser();
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to update avatar.");
     }
   };
 
@@ -91,22 +93,23 @@ export const AddAvatar = () => {
   });
 
   return (
-
-    <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center gap-5" >
-      <div className="relative w-50 h-50">
-        <img
-          src={prevImg || formik.values.avatar || "/default-avatar.png"}
-          alt="Avatar Preview"
-          className="w-50 h-50 rounded-full object-cover border-2 border-gray-300"
-        />
-        <Input
-          id="avatar-upload"
-          type="file"
-          onChange={handleUploadImg}
-          className="absolute inset-0 opacity-0 cursor-pointer rounded-full w-full h-full"
-        />
-      </div>
-      <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700" type="submit">Save avatar</button>
-    </form>
+    <>
+      <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center gap-5" >
+        <div className="relative w-50 h-50">
+          <img
+            src={prevImg || formik.values.avatar || "/default-avatar.png"}
+            alt="Avatar Preview"
+            className="w-50 h-50 rounded-full object-cover border-2 border-gray-300"
+          />
+          <Input
+            id="avatar-upload"
+            type="file"
+            onChange={handleUploadImg}
+            className="absolute inset-0 opacity-0 cursor-pointer rounded-full w-full h-full"
+          />
+        </div>
+        <button className="py-[10px] px-[20px] rounded-[5px] bg-cyan-700" type="submit">Save avatar</button>
+      </form>
+    </>
   )
 }

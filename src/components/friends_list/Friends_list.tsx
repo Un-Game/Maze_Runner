@@ -161,7 +161,7 @@ export default function Friend_list(props: props) {
 
   return (
     <div className="w-full h-full fixed flex z-20">
-      <ToastContainer
+      {/* <ToastContainer
         position="top-center"
         autoClose={2000}
         hideProgressBar
@@ -172,7 +172,7 @@ export default function Friend_list(props: props) {
         draggable
         pauseOnHover
         theme="dark"
-      />
+      /> */}
       <div
         className="h-full w-[calc(100vw-350px)] bg-gradient-to-r from-black/10 via-black/10 to-black/20"
         onClick={() => setFriendMenu(false)}

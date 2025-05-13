@@ -7,6 +7,8 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 type Keybinds = {
   up: string;
@@ -89,10 +91,10 @@ export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({ control: keybinds }),
       });
       if (!res.ok) throw new Error("Failed to save keybinds");
-      alert("Keybinds saved successfully!");
+      toast.success("Keybinds saved successfully!");
     } catch (err) {
       console.error("Save failed", err);
-      alert("Failed to save keybinds");
+      toast.error("Failed to save keybinds.");
     }
   };
 

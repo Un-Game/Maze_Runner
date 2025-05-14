@@ -51,19 +51,18 @@ const Signup = ({ setMenuState }: Props) => {
 
             setMenuState("login");
         } catch (error: any) {
-            if (error.response) {
-                const errorMessages = error.response.data.errorMessages;
-
+            if (error.response && Array.isArray(error.response.data.errors)) {
                 const newErrors: { [key: string]: string } = {};
-                if (Array.isArray(errorMessages)) {
-                    errorMessages.forEach((err: { field: string; message: string }) => {
-                        newErrors[err.field] = err.message;
-                    });
-                }
+
+                error.response.data.errors.forEach((err: { field: string; message: string }) => {
+                    newErrors[err.field] = err.message;
+                });
 
                 setErrors(newErrors);
             }
-        } finally {
+        }
+
+        finally {
             setLoading(false);
         }
     };

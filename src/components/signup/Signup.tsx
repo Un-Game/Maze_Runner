@@ -1,78 +1,67 @@
 import axios from "axios";
 import { useState } from "react";
 
-type props = {
+type Props = {
     setMenuState: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const Signup = (props: props) => {
-    const { setMenuState } = props;
-
+const Signup = ({ setMenuState }: Props) => {
     const [inputValue, setInputValue] = useState({
         username: "",
         email: "",
-        password: "",
+        password: ""
     });
-    const [errors, setErrors] = useState({
-        username: "",
-        email: "",
-        password: "",
-    });
+
+    const [errors, setErrors] = useState<{
+        username?: string;
+        email?: string;
+        password?: string;
+    }>({});
+
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue({
             ...inputValue,
-            [e.target.name]: e.target.value,
+            [e.target.name]: e.target.value
         });
-        setErrors({
-            ...errors,
-            [e.target.name]: "",
-        });
+        setErrors({}); // Clear errors when user starts typing
     };
 
     const handleSubmit = async () => {
         const { username, email, password } = inputValue;
-        if (email === "" || password === "" || username === "") {
+
+        if (!username || !email || !password) {
+            setErrors({
+                username: !username ? "Username is required" : undefined,
+                email: !email ? "Email is required" : undefined,
+                password: !password ? "Password is required" : undefined
+            });
             return;
         }
 
         setLoading(true);
+
         try {
-            const response = await axios.post(
-                "https://maze-runner-backend-1.onrender.com/user",
-                {
-                    username,
-                    email,
-                    password,
-                }
-            );
+            await axios.post("https://maze-runner-backend-2.onrender.com/user", {
+                username,
+                email,
+                password
+            });
+
             setMenuState("login");
         } catch (error: any) {
             if (error.response) {
-                const errorMessages = error.response.data.errors;
+                const errorMessages = error.response.data.errorMessages;
 
-                // Directly setting errors for specific fields
-                if (errorMessages.username) {
-                    setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        username: errorMessages.username,
-                    }));
+                const newErrors: { [key: string]: string } = {};
+                if (Array.isArray(errorMessages)) {
+                    errorMessages.forEach((err: { field: string; message: string }) => {
+                        newErrors[err.field] = err.message;
+                    });
                 }
 
-                if (errorMessages.email) {
-                    setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        email: errorMessages.email,
-                    }));
-                }
-
-                if (errorMessages.password) {
-                    setErrors((prevErrors) => ({
-                        ...prevErrors,
-                        password: errorMessages.password,
-                    }));
-                }
+                setErrors(newErrors);
             }
         } finally {
             setLoading(false);
@@ -80,9 +69,7 @@ const Signup = (props: props) => {
     };
 
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            handleSubmit();
-        }
+        if (e.key === "Enter") handleSubmit();
     };
 
     return (
@@ -91,48 +78,46 @@ const Signup = (props: props) => {
                 <div className="text-[70px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 drop-shadow-[0_0_20px_rgba(255,0,255,0.6)] text-center">
                     Sign up here
                 </div>
-                <div className="flex flex-col gap-[30px]">
+
+                <div className="flex flex-col gap-[20px]">
                     <input
                         type="text"
-                        className="w-full h-[55px] text-[20px] outline-none border border-cyan-400 rounded-[10px] px-[15px]"
-                        placeholder="Username"
                         name="username"
-                        value={inputValue.username}
+                        placeholder="Username"
+                        className="w-full h-[55px] text-[20px] outline-none border border-cyan-400 rounded-[10px] px-[15px]"
                         onChange={handleChange}
                         onKeyDown={handleEnter}
                     />
                     {errors.username && (
-                        <div className="text-red-500 text-[20px]">{errors.username}</div>
+                        <div className="text-red-500 text-[18px]">{errors.username}</div>
                     )}
 
                     <input
                         type="text"
-                        className="w-full h-[55px] text-[20px] outline-none border border-cyan-400 rounded-[10px] px-[15px]"
-                        placeholder="Email"
                         name="email"
-                        value={inputValue.email}
+                        placeholder="Email"
+                        className="w-full h-[55px] text-[20px] outline-none border border-cyan-400 rounded-[10px] px-[15px]"
                         onChange={handleChange}
                         onKeyDown={handleEnter}
                     />
                     {errors.email && (
-                        <div className="text-red-500 text-[20px]">{errors.email}</div>
+                        <div className="text-red-500 text-[18px]">{errors.email}</div>
                     )}
 
                     <input
                         type="password"
-                        className="w-full h-[55px] text-[20px] outline-none border border-cyan-400 rounded-[10px] px-[15px]"
-                        placeholder="Password"
                         name="password"
-                        value={inputValue.password}
+                        placeholder="Password"
+                        className="w-full h-[55px] text-[20px] outline-none border border-cyan-400 rounded-[10px] px-[15px]"
                         onChange={handleChange}
                         onKeyDown={handleEnter}
                     />
                     {errors.password && (
-                        <div className="text-red-500 text-[20px]">{errors.password}</div>
+                        <div className="text-red-500 text-[18px]">{errors.password}</div>
                     )}
 
                     <button
-                        className="w-full bg-black text-cyan-300 h-[60px] rounded-[10px] text-[25px] mt-[30px] flex justify-center items-center"
+                        className="w-full bg-black text-cyan-300 h-[60px] rounded-[10px] text-[25px] mt-[20px] flex justify-center items-center"
                         onClick={handleSubmit}
                         disabled={loading}
                     >
@@ -142,6 +127,7 @@ const Signup = (props: props) => {
                             "Sign up"
                         )}
                     </button>
+
                     <div className="flex gap-[20px]">
                         Already have an account?{" "}
                         <button

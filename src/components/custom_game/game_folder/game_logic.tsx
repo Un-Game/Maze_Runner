@@ -475,7 +475,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
         )}
       </div>
 
-      <div className="absolute top-2 right-2 text-white text-xs font-mono">
+      <div className="absolute top-2 right-2 text-white text-xs font-mono mt-[100px]">
         Velocity: X: {velocity.x.toFixed(2)}, Y: {velocity.y.toFixed(2)}
         <br />
         Position: X: {renderPosition.x.toFixed(0)}, Y: {renderPosition.y.toFixed(0)}

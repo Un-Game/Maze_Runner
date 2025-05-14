@@ -8,7 +8,7 @@ type Props = {
 export default function MainMenu(props: Props) {
     const { setMenuState } = props;
     return (
-        <div className="w-full h-[calc(100vh-100px)] flex items-center justify-center">
+        <div className="w-full h-[calc(100vh-100px)] flex items-start md:items-center justify-center">
             <div className="flex flex-col gap-[100px] items-center mt-[-100px]">
             <div className="text-[70px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 drop-shadow-[0_0_20px_rgba(255,0,255,0.6)] text-center mt-[-100px]">Welcome to Maze Runner</div>
                 <div className="flex flex-col gap-[30px]">

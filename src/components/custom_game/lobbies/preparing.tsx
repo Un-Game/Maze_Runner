@@ -17,14 +17,21 @@ export default function Lobby(props) {
 
         // if(lobbyInfo.players[0].username !== user.username)
 
+        const fetchLobby = async() => {
+            const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobby.joinCode}`);
+            setLobby(response.data);
+        }
+
         socket.on("lobby:update", async()=> {
-            const response = await axios.get(`https://maze-runner-backend-1.onrender.com/lobby/${lobby.joinCode}`);
+            const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobby.joinCode}`);
             setLobby(response.data);
         })
 
         socket.on("lobby:start", ()=> {
             setUserStatus("game");
         })
+
+        fetchLobby();
 
     },[socket])
 

@@ -40,7 +40,7 @@ const Signup = (props: props) => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://maze-runner-backend-1.onrender.com/user",
+                "https://maze-runner-backend-2.onrender.com/user",
                 {
                     username,
                     email,

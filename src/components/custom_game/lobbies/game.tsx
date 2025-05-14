@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default function Ingame(props) {
 
-    const {lobbyInfo} = props;
+    const {lobbyInfo, setUserStatus} = props;
     const [lobby, setLobby] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ export default function Ingame(props) {
 
         const fetchLobby = async()=>{
             try{
-                const response = await axios.get(`http://localhost:999/lobby/${lobbyInfo}`);
+                const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobbyInfo}`);
                 setLobby(response.data);
                 setLoading(false);
             }catch(err){
@@ -27,6 +27,6 @@ export default function Ingame(props) {
     return loading ? <div className="w-full h-full items-center justify-center bg-black">
         <div className="text-[30px] text-cyan-300">Loading...</div>
     </div> : <div className="w-full h-full justify-center items-center">
-        <GameAreaMultiplayer lobby={lobby}/>
+        <GameAreaMultiplayer lobby={lobby} setUserStatus={setUserStatus}/>
     </div>
 }

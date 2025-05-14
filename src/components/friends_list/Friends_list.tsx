@@ -43,7 +43,7 @@ export default function Friend_list(props: props) {
   const fetchIncoming = async () => {
     try {
       const res = await axios.get(
-        `https://maze-runner-backend-1.onrender.com/request/incoming/${user._id}`
+        `https://maze-runner-backend-2.onrender.com/request/incoming/${user._id}`
       );
       setIncomingRequests(res.data);
       console.log(res.data);
@@ -58,7 +58,7 @@ export default function Friend_list(props: props) {
     setError(false);
     try {
       const response = await axios.get(
-        `https://maze-runner-backend-1.onrender.com/user/${id}`
+        `https://maze-runner-backend-2.onrender.com/user/${id}`
       );
       setViewFriend(response.data);
       refetchUser();
@@ -71,7 +71,7 @@ export default function Friend_list(props: props) {
     setDeletionLoading(true);
     try {
       await axios.put(
-        "https://maze-runner-backend-1.onrender.com/user/removefriend",
+        "https://maze-runner-backend-2.onrender.com/user/removefriend",
         {
           senderId: user._id,
           receiverId: id,
@@ -90,7 +90,7 @@ export default function Friend_list(props: props) {
     setSearchResult("loading");
     try {
       const response = await axios.get(
-        `https://maze-runner-backend-1.onrender.com/user/find/${searchInput}`
+        `https://maze-runner-backend-2.onrender.com/user/find/${searchInput}`
       );
       setSearchResult(response.data);
     } catch (err) {
@@ -102,7 +102,7 @@ export default function Friend_list(props: props) {
   const addFriendButton = async () => {
     setSending("sending");
     try {
-      await axios.post("https://maze-runner-backend-1.onrender.com/request/", {
+      await axios.post("https://maze-runner-backend-2.onrender.com/request/", {
         senderId: user._id,
         receiverId: searchResult._id,
       });
@@ -116,7 +116,7 @@ export default function Friend_list(props: props) {
   const acceptRequest = async (id) => {
     try {
       const resp = await axios.delete(
-        "https://maze-runner-backend-1.onrender.com/request/accept",
+        "https://maze-runner-backend-2.onrender.com/request/accept",
         {
           data: {
             senderId: id,
@@ -135,7 +135,7 @@ export default function Friend_list(props: props) {
   const declineRequest = async (id) => {
     try {
       const resp = await axios.delete(
-        "https://maze-runner-backend-1.onrender.com/request/decline",
+        "https://maze-runner-backend-2.onrender.com/request/decline",
         {
           data: {
             senderId: id,

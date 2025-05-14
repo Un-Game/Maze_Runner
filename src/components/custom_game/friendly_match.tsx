@@ -79,7 +79,7 @@ export default function CustomGame(props) {
 
     const fetchLobby = async () => {
         try {
-            const data = await axios.get("https://maze-runner-backend-1.onrender.com/lobby");
+            const data = await axios.get("https://maze-runner-backend-2.onrender.com/lobby");
             setLobbies(data.data);
         } catch (err) {
             console.log(err);
@@ -101,7 +101,7 @@ export default function CustomGame(props) {
 
     const joinLobby = async(code) => {
         try{
-            const response = await axios.get(`https://maze-runner-backend-1.onrender.com/lobby/${code}`);
+            const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${code}`);
             console.log(response);
             
             if(response.data === "Not found"){
@@ -243,5 +243,5 @@ export default function CustomGame(props) {
             </div>
         </div>
     ) : userStatus === "lobby" ? <Lobby lobbyInfo={lobbyInfo} setUserStatus={setUserStatus}/> 
-      : userStatus === "game" && <Ingame lobbyInfo={lobbyInfo.joinCode}/>
+      : userStatus === "game" && <Ingame lobbyInfo={lobbyInfo.joinCode} setUserStatus={setUserStatus}/>
 }

@@ -157,7 +157,7 @@ export default function GameAreaPracticeMatter(props:props) {
   useEffect(()=>{
     const handleWheel = (e) => {
       setScale((prev) => {
-        const delta = e.deltaY > 0 ? 10 : -10;
+        const delta = e.deltaY > 0 ? 0.1 : -1;
         const next = prev + delta;
         if(next > 150){
           return 150;

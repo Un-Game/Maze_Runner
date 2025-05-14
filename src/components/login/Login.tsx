@@ -33,7 +33,7 @@ const Login = (props: props) => {
 
     try {
       const response = await axios.post(
-        "https://maze-runner-backend-1.onrender.com/user/login",
+        "https://maze-runner-backend-2.onrender.com/user/login",
         {
           email,
           password,

@@ -10,6 +10,7 @@ type props = {
 
 export default function GameAreaTest(props: props) {
   const {user, refetchUser} = useUser();
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   const currentUserId = user._id;
   const { keybinds } = useKeyBind();
   const { setMenuState, menuState } = props;
@@ -293,7 +294,7 @@ export default function GameAreaTest(props: props) {
       console.log("Gained:", gainedExp, "New Total:", newTotalExp);
 
       if (gainedExp) {
-        fetch(`https://maze-runner-backend-2.onrender.com/user/${currentUserId}`, {
+        fetch(`${BASE_URL}/user/${currentUserId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

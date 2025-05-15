@@ -7,12 +7,13 @@ export default function Ingame(props) {
     const {lobbyInfo, setUserStatus} = props;
     const [lobby, setLobby] = useState(null);
     const [loading, setLoading] = useState(true);
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     useEffect(()=>{
 
         const fetchLobby = async()=>{
             try{
-                const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobbyInfo}`);
+                const response = await axios.get(`${BASE_URL}/lobby/${lobbyInfo}`);
                 setLobby(response.data);
                 setLoading(false);
             }catch(err){

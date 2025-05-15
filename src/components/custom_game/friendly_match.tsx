@@ -42,6 +42,7 @@ export default function CustomGame(props) {
     const [lobbyInfo, setLobbyInfo] = useState(null);
     const {user} = useUser();
     const socket = useSocket();
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     useEffect(()=>{
         if(!socket) return;
@@ -79,7 +80,7 @@ export default function CustomGame(props) {
 
     const fetchLobby = async () => {
         try {
-            const data = await axios.get("https://maze-runner-backend-2.onrender.com/lobby");
+            const data = await axios.get(`${BASE_URL}/lobby`);
             setLobbies(data.data);
         } catch (err) {
             console.log(err);
@@ -101,7 +102,7 @@ export default function CustomGame(props) {
 
     const joinLobby = async(code) => {
         try{
-            const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${code}`);
+            const response = await axios.get(`${BASE_URL}/lobby/${code}`);
             console.log(response);
             
             if(response.data === "Not found"){

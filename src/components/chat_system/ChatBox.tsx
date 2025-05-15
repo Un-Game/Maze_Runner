@@ -21,7 +21,7 @@ export default function ChatBox(props) {
     if (!activeUser || !user?._id) return;
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://maze-runner-backend-2.onrender.com" || "http://localhost:999";
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:999";
       const res = await fetch(`${baseUrl}/message/${user._id}/${activeUser[0]}`);
 
       const history = await res.json();
@@ -40,12 +40,6 @@ export default function ChatBox(props) {
   }, [activeUser])
 
   useEffect(() => {
-    // // socketRef.current = io("https://maze-runner-backend-2.onrender.com", {
-    // socketRef.current = io("http://localhost:999",{
-    //   withCredentials: true
-    // });
-
-
     if (!socket) return;
 
     socket.on("chat:message", (message) => {

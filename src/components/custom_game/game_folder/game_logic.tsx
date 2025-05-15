@@ -72,6 +72,7 @@ const playerSetting = {
 
 export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   const { keybinds } = useKeyBind()
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const [renderPosition, setRenderPosition] = useState({
     x: config.containerWidth / 2,
@@ -107,7 +108,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
 
   const fetchMap = async () => {
     try {
-      const response = await axios.get(`https://maze-runner-backend-2.onrender.com/map/${lobby.map}`);
+      const response = await axios.get(`${BASE_URL}/map/${lobby.map}`);
       setCurrMap(response.data.layout);
     } catch (err) {
       console.log(err);
@@ -123,7 +124,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       } else {
         setMatchResult("loss");
       }
-      axios.put(`https://maze-runner-backend-2.onrender.com/user/${user._id}`, {exp: winner === user._id ? 10 : 5});
+      axios.put(`${BASE_URL}/user/${user._id}`, {exp: winner === user._id ? 10 : 5});
     };
 
 

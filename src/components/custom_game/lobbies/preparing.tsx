@@ -10,6 +10,7 @@ export default function Lobby(props) {
     const [lobby, setLobby] = useState(lobbyInfo);
     const {user, refetchUser} = useUser();
     const socket = useSocket();
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     useEffect(()=>{
         if(!socket)
@@ -18,12 +19,12 @@ export default function Lobby(props) {
         // if(lobbyInfo.players[0].username !== user.username)
 
         const fetchLobby = async() => {
-            const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobby.joinCode}`);
+            const response = await axios.get(`${BASE_URL}/lobby/${lobby.joinCode}`);
             setLobby(response.data);
         }
 
         socket.on("lobby:update", async()=> {
-            const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobby.joinCode}`);
+            const response = await axios.get(`${BASE_URL}/lobby/${lobby.joinCode}`);
             setLobby(response.data);
         })
 

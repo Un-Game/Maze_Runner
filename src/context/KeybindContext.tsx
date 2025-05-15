@@ -40,6 +40,7 @@ const Key_Bind_Context = createContext<KeyBindContextType | undefined>(
 
 export const useKeyBind = () => {
   const context = useContext(Key_Bind_Context);
+  
   if (!context)
     throw new Error("useKeyBind must be used within a KeyBindProvider");
   return context;
@@ -48,6 +49,7 @@ export const useKeyBind = () => {
 export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
   const [keybinds, setKeybinds] = useState<Keybinds>(defaultKeybinds);
   const {user, refetchUser} = useUser();
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const updateKeybind = (key: keyof Keybinds, value: string) => {
     setKeybinds((prev) => ({
@@ -60,7 +62,7 @@ export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
     const fetchKeybinds = async () => {
       const currentUserId = user._id;
       try {
-        const res = await fetch(`https://maze-runner-backend-2.onrender.com/user/${currentUserId}`);
+        const res = await fetch(`${BASE_URL}/user/${currentUserId}`);
         if (!res.ok) throw new Error("Failed to fetch keybinds");
         const data = await res.json();
 
@@ -81,7 +83,7 @@ export const KeyBindProvider = ({ children }: { children: ReactNode }) => {
     const currentUserId = user._id;
 
     try {
-      const res = await fetch(`https://maze-runner-backend-2.onrender.com/user/${currentUserId}`, {
+      const res = await fetch(`${BASE_URL}/user/${currentUserId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

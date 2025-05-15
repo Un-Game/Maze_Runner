@@ -7,7 +7,7 @@ type props = {
 
 const Login = (props: props) => {
   const { setMenuState } = props;
-
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -33,7 +33,7 @@ const Login = (props: props) => {
 
     try {
       const response = await axios.post(
-        "https://maze-runner-backend-2.onrender.com/user/login",
+        `${BASE_URL}/user/login`,
         {
           email,
           password,

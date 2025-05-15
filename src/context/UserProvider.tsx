@@ -11,10 +11,11 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const refetchUser = async (_id: string) => {
     try {
-      const res = await axios.get(`https://maze-runner-backend-2.onrender.com/user/${_id}`);
+      const res = await axios.get(`${BASE_URL}/user/${_id}`);
       // const res = await axios.get(`http://localhost:999/user/${_id}`);
       setUser(res.data);
     } catch (error) {
@@ -26,7 +27,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async (_id: string) => {
       try {
-        const res = await axios.get(`https://maze-runner-backend-2.onrender.com/user/${_id}`);
+        const res = await axios.get(`${BASE_URL}/user/${_id}`);
         // const res = await axios.get(`http://localhost:999/user/${_id}`);
         setUser(res.data);
       } catch (error) {

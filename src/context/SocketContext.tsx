@@ -12,12 +12,13 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
   const {user, refetchUser} = useUser();
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     if (!user?._id) return;
 
     // socketRef.current = io("http://localhost:999", {
-    socketRef.current = io("https://maze-runner-backend-2.onrender.com", {
+    socketRef.current = io(`${BASE_URL}`, {
       withCredentials: true,
     });
 

@@ -85,7 +85,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   const [ping, setPing] = useState(0);
   const [currMap, setCurrMap] = useState(null);
 
-  const sceneRef = useRef<HTMLDivElement>(null);
+  // const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
   const runnerRef = useRef(Runner.create());
   const playerBodyRef = useRef<Matter.Body | null>(null);
@@ -118,6 +118,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
     fetchMap();
 
     const handleGameFinished = ({ winner }) => {
+      console.log("Socket response");
       if (winner === user._id) {
         setMatchResult("win");
       } else {
@@ -126,12 +127,22 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       axios.put(`https://maze-runner-backend-2.onrender.com/user/${user._id}`, {exp: winner === user._id ? 10 : 5});
     };
 
+    const handleEnemyMove = (data) => {
+        const player2Body = player2BodyRef.current;
+        if (player2Body) {
+            Body.setPosition(player2Body, { x: data.x, y: data.y });
+        }
+    };
+    if(!player2BodyRef.current)
+      return;
+
 
     socket.on("game:finished", handleGameFinished);
-
+    socket.on("game:move", handleEnemyMove);
     return () => {
       socket.off("game:finished", handleGameFinished);
-    };
+      socket.off("game:move", handleEnemyMove);
+    }
   }, []);
 
   const endMatch = () => {
@@ -409,12 +420,12 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   return currMap ? !matchResult ? (
     <div className="w-full h-full flex justify-center">
       <div
-        ref={sceneRef}
+        // ref={sceneRef}
         style={{
           width: `${config.containerWidth}px`,
           height: `${config.containerHeight}px`,
         }}
-        className="border items-center border-green-300 relative overflow-hidden w-fit h-fit bg-gray-800 scale-100"
+        className="border items-center border-green-300 relative overflow-hidden w-fit h-fit bg-gray-800 scale-60 mt-[-100px] 2xl:scale-100 2xl:mt-0"
       >
 
         <div

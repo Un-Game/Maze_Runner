@@ -84,6 +84,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [ping, setPing] = useState(0);
   const [currMap, setCurrMap] = useState(null);
+  const [readyState, setReadyState] = useState([false,false]);
 
   // const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
@@ -116,6 +117,11 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
 
   useEffect(() => {
     fetchMap();
+
+    socket.on("game:ready",()=>{
+      setReadyState(prev=>[prev[0],true]);
+    });
+
 
     const handleGameFinished = ({ winner }) => {
       console.log("Socket response");
@@ -153,6 +159,14 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   useEffect(() => {
 
     if (!currMap) return;
+    if (!readyState[0]) {
+      socket.emit("game:ready", {room: lobby.joinCode});
+      setReadyState(prev=>[true,prev[1]]);
+      return;
+    }
+    if(!readyState[1]) {
+      return;
+    }
 
     const engine = engineRef.current;
     const runner = runnerRef.current;

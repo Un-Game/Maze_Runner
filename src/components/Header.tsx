@@ -1,5 +1,5 @@
 import { Shield } from "lucide-react";
-import { useRef, useState } from "react";
+import { use, useRef, useState } from "react";
 import { useUser } from "@/context/UserProvider";
 
 type props = {
@@ -79,14 +79,10 @@ export default function Header(props: props) {
         </div>
       </div>
       <button className="h-full w-[400px] bg-[linear-gradient(90deg,_rgba(2,0,36,1)_0%,_rgba(9,9,121,1)_50%,_rgba(0,212,255,1)_100%)] p-[30px] transition-colors duration-[1s] flex items-center justify-between">
-        <div className="text-[22px] flex items-center gap-[10px]">
+        <div className="text-[22px] flex items-center gap-[20px]">
           <div className="text-start">
             <div>{user.username}</div>
-            <div>Lvl: {Math.floor(user.exp / 100) + 1}</div>
-          </div>
-          <div className="w-[40px] h-[40px]">
-            <Shield className=" w-full h-full" stroke="yellow" fill="gray" />
-            {/* Rank badge placeholder */}
+            <div className="flex gap-[20px]">Lvl: {Math.floor(user.exp / 100) + 1} <span>Exp: {user.exp%100}</span></div>
           </div>
         </div>
         <div className="w-[50px] h-[50px]">

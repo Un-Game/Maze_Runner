@@ -133,18 +133,8 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       axios.put(`https://maze-runner-backend-2.onrender.com/user/${user._id}`, {exp: winner === user._id ? 10 : 5});
     };
 
-    const handleEnemyMove = (data) => {
-        const player2Body = player2BodyRef.current;
-        if (player2Body) {
-            Body.setPosition(player2Body, { x: data.x, y: data.y });
-        }
-    };
-    if(!player2BodyRef.current)
-      return;
-
-
     socket.on("game:finished", handleGameFinished);
-    socket.on("game:move", handleEnemyMove);
+
     return () => {
       socket.off("game:finished", handleGameFinished);
       socket.off("game:move", handleEnemyMove);
@@ -155,6 +145,15 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
     console.log("finish");
     socket.emit("game:finish", { room: lobby.joinCode });
   }
+
+    const handleEnemyMove = (data) => {
+      const player2Body = player2BodyRef.current;
+      if (player2Body) {
+          Body.setPosition(player2Body, { x: data.x, y: data.y });
+      }
+    };
+
+  
 
   useEffect(() => {
 
@@ -167,6 +166,10 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
     if(!readyState[1]) {
       return;
     }
+
+
+    socket.on("game:move", handleEnemyMove);
+    
 
     const engine = engineRef.current;
     const runner = runnerRef.current;
@@ -239,9 +242,6 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
     Composite.add(engine.world, mazeBody);
     Composite.add(engine.world, finish);
 
-
-    console.log(currMap.spawnPoint[0]);
-
     const player = Bodies.circle(
       currMap.spawnPoint[0].x,
       currMap.spawnPoint[0].y,
@@ -274,16 +274,16 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       const player2Body = player2BodyRef.current;
       if (!playerBody || !player2Body) return;
 
-      socket.on("game:move", (data) => {
-        const { x, y } = data;
-        Body.setPosition(player2Body, {
-          x: x,
-          y: y,
-        });
+      // socket.on("game:move", (data) => {
+      //   const { x, y } = data;
+      //   Body.setPosition(player2Body, {
+      //     x: x,
+      //     y: y,
+      //   });
 
 
 
-      })
+      // })
 
       setRenderEnemy({ x: player2Body.position.x, y: player2Body.position.y });
 
@@ -429,7 +429,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
 
     };
 
-  }, [handleKeyDown, handleKeyUp, currMap]);
+  }, [handleKeyDown, handleKeyUp, currMap, readyState]);
 
   return currMap ? !matchResult ? (
     <div className="w-full h-full flex justify-center">

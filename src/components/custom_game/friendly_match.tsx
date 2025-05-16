@@ -173,7 +173,7 @@ export default function CustomGame(props) {
                                         </Select>
                                     </div>
 
-                                    <div className="grid grid-cols-4 items-center gap-4">
+                                    {/* <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="game_mode" className="text-right">Game Mode</Label>
                                         <Select
                                             value={formik.values.game_mode}
@@ -188,7 +188,7 @@ export default function CustomGame(props) {
                                                 <SelectItem value="unranked">Unranked</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                    </div>
+                                    </div> */}
                                     <div className="flex">
                                         <div className="w-[100px]">Private</div>
                                         <input type="checkbox" checked={formik.values.isPrivate} onChange={() => formik.setFieldValue("isPrivate", !formik.values.isPrivate)} />

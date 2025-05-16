@@ -14,8 +14,7 @@ export default function Lobby(props) {
     useEffect(()=>{
         if(!socket)
             return;
-
-        // if(lobbyInfo.players[0].username !== user.username)
+        
 
         const fetchLobby = async() => {
             const response = await axios.get(`https://maze-runner-backend-2.onrender.com/lobby/${lobby.joinCode}`);
@@ -33,7 +32,8 @@ export default function Lobby(props) {
 
         fetchLobby();
 
-    },[socket])
+    },[socket]);
+
 
 
     const leave = () => {
@@ -81,7 +81,7 @@ export default function Lobby(props) {
             </div>
             <div className="flex text-[20px] gap-[50px]">
                 <button className="w-[300px] bg-red-500/80 rounded-[10px] text-[35px]" onClick={()=>leave()}>Leave</button>
-                {lobby.players[0].username === user.username &&  <button className={`w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px] ${lobby.players.length!==2 && "bg-gray-500"}`} onClick={()=>start()}>Start</button>}
+                {lobby.players[0].username === user.username &&  <button className={`w-[300px] bg-cyan-600/80 rounded-[10px] text-[35px] ${lobby.players.length!==2 ? "bg-gray-500" : ""}`} onClick={()=>start()}>Start</button>}
             </div>
         </div>
     )

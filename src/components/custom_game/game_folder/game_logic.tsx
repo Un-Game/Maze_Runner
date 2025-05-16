@@ -84,16 +84,15 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [ping, setPing] = useState(0);
   const [currMap, setCurrMap] = useState(null);
-  const [readyState, setReadyState] = useState([false,false]);
 
-  // const sceneRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
   const runnerRef = useRef(Runner.create());
   const playerBodyRef = useRef<Matter.Body | null>(null);
   const player2BodyRef = useRef<Matter.Body | null>(null);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const [matchResult, setMatchResult] = useState(null);
-  const { user } = useUser()
+  const { user, refetchUser } = useUser()
   const socket = useSocket()
   const cellSize = 17
 
@@ -118,19 +117,18 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   useEffect(() => {
     fetchMap();
 
-    socket.on("game:ready",()=>{
-      setReadyState(prev=>[prev[0],true]);
-    });
-
 
     const handleGameFinished = ({ winner }) => {
-      console.log("Socket response");
       if (winner === user._id) {
         setMatchResult("win");
       } else {
         setMatchResult("loss");
       }
-      axios.put(`https://maze-runner-backend-2.onrender.com/user/${user._id}`, {exp: winner === user._id ? 10 : 5});
+      axios.put(`https://maze-runner-backend-2.onrender.com/user/${user._id}`, {exp: winner === user._id ? user.exp+10 : user.exp+5});
+      refetchUser();
+      setTimeout(()=>{
+        setUserStatus("lobby");
+      },3000);
     };
 
     socket.on("game:finished", handleGameFinished);
@@ -158,14 +156,6 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   useEffect(() => {
 
     if (!currMap) return;
-    if (!readyState[0]) {
-      socket.emit("game:ready", {room: lobby.joinCode});
-      setReadyState(prev=>[true,prev[1]]);
-      return;
-    }
-    if(!readyState[1]) {
-      return;
-    }
 
 
     socket.on("game:move", handleEnemyMove);
@@ -429,12 +419,12 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
 
     };
 
-  }, [handleKeyDown, handleKeyUp, currMap, readyState]);
+  }, [handleKeyDown, handleKeyUp, currMap]);
 
   return currMap ? !matchResult ? (
     <div className="w-full h-full flex justify-center">
       <div
-        // ref={sceneRef}
+        ref={sceneRef}
         style={{
           width: `${config.containerWidth}px`,
           height: `${config.containerHeight}px`,
@@ -514,7 +504,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       </div>
     </div>
   ) : (
-    <div className="w-full h-[calc(100vh-100px)] flex justify-center pt-[100px] md:pt-[200px] bg-black/50" onClick={()=>setUserStatus("lobby")}>
+    <div className="w-full h-[calc(100vh-100px)] flex justify-center pt-[100px] md:pt-[200px] bg-black/50">
       <div className="w-fit h-fit flex flex-col items-center">
         <div
           className={`
@@ -528,7 +518,7 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
           {matchResult === "win" ? "Victory" : "Defeat"}
         </div>
         <div>{matchResult === "win" ? "+10 exp" : "+5 exp"}</div>
-        <div className="text-[50px]">Tap annywhere to continue</div>
+        <div className="text-[50px]">Returning to game lobby...</div>
       </div>
     </div>
   ) : (

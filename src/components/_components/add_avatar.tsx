@@ -95,7 +95,7 @@ export const AddAvatar = () => {
     <form onSubmit={formik.handleSubmit} className="flex flex-col items-center justify-center gap-5" >
       <div className="relative w-50 h-50">
         <img
-          src={prevImg || formik.values.avatar || "/default-avatar.png"}
+          src={prevImg || formik.values.avatar || "./globe.svg"}
           alt="Avatar Preview"
           className="w-50 h-50 rounded-full object-cover border-2 border-gray-300"
         />

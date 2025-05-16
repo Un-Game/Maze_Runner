@@ -85,8 +85,9 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [ping, setPing] = useState(0);
   const [currMap, setCurrMap] = useState(null);
+  const [readyState, setReadyState] = useState([false,false]);
 
-  const sceneRef = useRef<HTMLDivElement>(null);
+  // const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef(Engine.create());
   const runnerRef = useRef(Runner.create());
   const playerBodyRef = useRef<Matter.Body | null>(null);
@@ -118,7 +119,13 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
   useEffect(() => {
     fetchMap();
 
+    socket.on("game:ready",()=>{
+      setReadyState(prev=>[prev[0],true]);
+    });
+
+
     const handleGameFinished = ({ winner }) => {
+      console.log("Socket response");
       if (winner === user._id) {
         setMatchResult("win");
       } else {
@@ -127,12 +134,12 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       axios.put(`${BASE_URL}/user/${user._id}`, {exp: winner === user._id ? 10 : 5});
     };
 
-
     socket.on("game:finished", handleGameFinished);
 
     return () => {
       socket.off("game:finished", handleGameFinished);
-    };
+      socket.off("game:move", handleEnemyMove);
+    }
   }, []);
 
   const endMatch = () => {
@@ -140,9 +147,30 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
     socket.emit("game:finish", { room: lobby.joinCode });
   }
 
+    const handleEnemyMove = (data) => {
+      const player2Body = player2BodyRef.current;
+      if (player2Body) {
+          Body.setPosition(player2Body, { x: data.x, y: data.y });
+      }
+    };
+
+  
+
   useEffect(() => {
 
     if (!currMap) return;
+    if (!readyState[0]) {
+      socket.emit("game:ready", {room: lobby.joinCode});
+      setReadyState(prev=>[true,prev[1]]);
+      return;
+    }
+    if(!readyState[1]) {
+      return;
+    }
+
+
+    socket.on("game:move", handleEnemyMove);
+    
 
     const engine = engineRef.current;
     const runner = runnerRef.current;
@@ -215,9 +243,6 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
     Composite.add(engine.world, mazeBody);
     Composite.add(engine.world, finish);
 
-
-    console.log(currMap.spawnPoint[0]);
-
     const player = Bodies.circle(
       currMap.spawnPoint[0].x,
       currMap.spawnPoint[0].y,
@@ -250,16 +275,16 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
       const player2Body = player2BodyRef.current;
       if (!playerBody || !player2Body) return;
 
-      socket.on("game:move", (data) => {
-        const { x, y } = data;
-        Body.setPosition(player2Body, {
-          x: x,
-          y: y,
-        });
+      // socket.on("game:move", (data) => {
+      //   const { x, y } = data;
+      //   Body.setPosition(player2Body, {
+      //     x: x,
+      //     y: y,
+      //   });
 
 
 
-      })
+      // })
 
       setRenderEnemy({ x: player2Body.position.x, y: player2Body.position.y });
 
@@ -405,17 +430,17 @@ export default function GameAreaMultiplayer({ lobby,setUserStatus }) {
 
     };
 
-  }, [handleKeyDown, handleKeyUp, currMap]);
+  }, [handleKeyDown, handleKeyUp, currMap, readyState]);
 
   return currMap ? !matchResult ? (
     <div className="w-full h-full flex justify-center">
       <div
-        ref={sceneRef}
+        // ref={sceneRef}
         style={{
           width: `${config.containerWidth}px`,
           height: `${config.containerHeight}px`,
         }}
-        className="border items-center border-green-300 relative overflow-hidden w-fit h-fit bg-gray-800 scale-100"
+        className="border items-center border-green-300 relative overflow-hidden w-fit h-fit bg-gray-800 scale-60 mt-[-100px] 2xl:scale-100 2xl:mt-0"
       >
 
         <div

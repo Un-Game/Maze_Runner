@@ -17,8 +17,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!user?._id) return;
 
-    // socketRef.current = io("http://localhost:999", {
     socketRef.current = io(`${BASE_URL}`, {
+
       withCredentials: true,
     });
 
